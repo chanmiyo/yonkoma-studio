@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>四コマスタジオ</title>
+<link href="https://fonts.googleapis.com/css2?family=Shippori+Mincho:wght@600;800&family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{--ink:#1A1A1A;--hair:#A07040;--clover:#90C020;--red:#D04030;
+--aozuri:#5FBBD6;--aozuri-pale:#DCF0F6;--desk:#2E2822;--desk-2:#3D362E;--muted:#8B8378;}
+*{box-sizing:border-box;}
+body{margin:0;font-family:"Noto Sans JP",system-ui,sans-serif;background:var(--desk);
+ color:var(--ink);line-height:1.7;padding-bottom:60px;}
+button{font-family:inherit;cursor:pointer;}
+.hdr{padding:28px 20px 20px;border-bottom:1px solid rgba(255,255,255,.12);position:relative;}
+.hdr h1{font-family:"Shippori Mincho",serif;font-weight:800;font-size:36px;letter-spacing:.16em;
+ color:#fff;margin:0;}
+.hdr .sub{color:var(--aozuri);font-size:12px;letter-spacing:.28em;margin-top:8px;font-weight:500;}
+.tombo{position:absolute;width:16px;height:16px;border:1px solid rgba(255,255,255,.3);}
+.tombo.tl{top:12px;left:12px;border-right:0;border-bottom:0;}
+.tombo.tr{top:12px;right:12px;border-left:0;border-bottom:0;}
+.wrap{display:flex;gap:22px;padding:22px 16px 0;align-items:flex-start;}
+.work{flex:1 1 460px;min-width:0;}
+.side{width:330px;flex:0 0 330px;position:sticky;top:14px;}
+@media(max-width:900px){.wrap{flex-direction:column;padding:16px 12px 0;}
+ .side{width:100%;flex:none;position:static;order:-1;}.hdr h1{font-size:28px;}}
+.card{background:var(--desk-2);border:1px solid rgba(255,255,255,.09);border-radius:3px;
+ padding:18px;margin-bottom:16px;}
+.card h2{font-family:"Shippori Mincho",serif;font-size:19px;color:#fff;margin:0 0 4px;letter-spacing:.08em;}
+.card .lede{color:var(--muted);font-size:12.5px;margin:0 0 16px;}
+label.fl{display:block;color:var(--aozuri);font-size:11.5px;font-weight:700;letter-spacing:.14em;margin:0 0 6px;}
+input[type=text],textarea,select{width:100%;background:rgba(0,0,0,.28);
+ border:1px solid rgba(255,255,255,.16);border-radius:2px;color:#fff;padding:11px 12px;
+ font-size:14.5px;line-height:1.6;resize:vertical;font-family:inherit;}
+input:focus,textarea:focus,select:focus{outline:0;border-color:var(--aozuri);background:rgba(0,0,0,.4);}
+select option{background:#2E2822;}
+.btn{background:var(--hair);color:#fff;border:0;border-radius:2px;padding:12px 20px;
+ font-size:14px;font-weight:700;letter-spacing:.06em;transition:.15s;}
+.btn:hover{filter:brightness(1.14);} .btn:disabled{opacity:.4;cursor:not-allowed;}
+.btn.ghost{background:transparent;border:1px solid rgba(255,255,255,.28);color:#fff;}
+.btn.sm{padding:7px 13px;font-size:12px;}
+.btn.go{background:var(--clover);color:#173300;}
+.btn:focus-visible{outline:2px solid var(--aozuri);outline-offset:2px;}
+.koma{border-left:3px solid var(--aozuri);padding:0 0 0 14px;margin-bottom:22px;}
+.koma .ttl{font-family:"Shippori Mincho",serif;color:#fff;font-size:15px;letter-spacing:.1em;margin-bottom:9px;}
+.koma .ttl em{color:var(--muted);font-style:normal;font-size:11.5px;margin-left:9px;}
+.koma textarea,.koma select,.koma input{margin-bottom:8px;}
+.cnt{font-size:11px;color:var(--muted);text-align:right;margin:-4px 0 8px;}
+.cnt.over{color:var(--red);font-weight:700;}
+.row{display:flex;gap:9px;flex-wrap:wrap;align-items:center;}
+.genko{background:#fff;padding:11px;border-radius:2px;box-shadow:0 14px 34px rgba(0,0,0,.5);}
+.genko .cap{display:flex;justify-content:space-between;align-items:baseline;font-size:10px;
+ color:var(--aozuri);letter-spacing:.16em;border-bottom:1px solid var(--aozuri-pale);
+ padding-bottom:6px;margin-bottom:9px;font-weight:700;}
+.genko .cap b{color:var(--hair);font-size:11px;letter-spacing:.1em;}
+.frame{aspect-ratio:820/600;border:2px solid var(--ink);margin-bottom:5.6%;position:relative;
+ overflow:hidden;background:#fff;display:flex;flex-direction:column;gap:5px;padding:8px;}
+.frame:last-child{margin-bottom:0;}
+.frame.empty{border-color:var(--aozuri);border-style:dashed;
+ background:repeating-linear-gradient(0deg,transparent 0 15px,var(--aozuri-pale) 15px 16px);}
+.frame img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;}
+.frame .no{position:absolute;right:5px;bottom:3px;font-family:"Shippori Mincho",serif;
+ color:var(--aozuri);font-size:15px;font-weight:800;z-index:1;}
+.fuki{background:#fff;border:1.5px solid var(--ink);border-radius:11px;font-size:10.5px;
+ line-height:1.45;padding:4px 8px;max-width:76%;position:relative;z-index:1;}
+.fuki:nth-child(2){align-self:flex-end;}
+.frame .art{position:absolute;left:8px;right:8px;bottom:6px;font-size:9.5px;color:var(--muted);z-index:0;}
+.hint{background:rgba(95,187,214,.1);border-left:3px solid var(--aozuri);padding:11px 13px;
+ font-size:12.5px;color:#CFE9F2;margin:14px 0 0;}
+.err{background:rgba(208,64,48,.15);border-left:3px solid var(--red);padding:11px 13px;
+ font-size:13px;color:#F6C8C2;margin-top:12px;}
+.hide{display:none!important;}
+.spin{display:inline-block;width:13px;height:13px;border:2px solid rgba(255,255,255,.3);
+ border-top-color:#fff;border-radius:50%;animation:sp .7s linear infinite;vertical-align:-2px;margin-right:7px;}
+@keyframes sp{to{transform:rotate(360deg)}}
+@media(prefers-reduced-motion:reduce){.spin{animation-duration:2.4s}}
+.chk{display:flex;align-items:flex-start;gap:9px;font-size:13px;color:#DDD6CC;padding:6px 0;
+ border-bottom:1px dotted rgba(255,255,255,.1);}
+.chk input{margin-top:4px;accent-color:var(--clover);flex:none;width:auto;}
+.state{font-size:11px;color:var(--muted);text-align:center;margin-top:9px;min-height:16px;}
+</style>
+</head>
+<body>
+
+<div class="hdr">
+  <span class="tombo tl"></span><span class="tombo tr"></span>
+  <h1>四コマスタジオ</h1>
+  <div class="sub">ふむふむ瓦版　版下制作台</div>
+</div>
+
+<div class="wrap">
+<div class="work">
+
+  <div class="card">
+    <h2>ネームを起こす</h2>
+    <p class="lede">その日あった出来事を、人に話すつもりで書いてください。具体的なほど良いネームになります。</p>
+    <div class="row" style="gap:12px;margin-bottom:14px">
+      <div style="flex:1 1 140px"><label class="fl">号数</label>
+        <input type="text" id="issue" placeholder="例：2026年9月号"></div>
+      <div style="flex:1 1 140px"><label class="fl">対象月（季節に反映）</label>
+        <input type="text" id="month" placeholder="例：2026年9月"></div>
+    </div>
+    <label class="fl">テーマ・出来事</label>
+    <textarea id="theme" rows="3" placeholder="例：うしくりーん作戦で集合写真を撮ろうとドローンを用意したら、直前にアップデートが始まってiPhoneで撮った"></textarea>
+    <div class="row" style="margin-top:14px">
+      <button class="btn go" id="gen">ネームを作る</button>
+      <button class="btn ghost sm" id="blank">白紙から書く</button>
+    </div>
+    <div id="genErr" class="err hide"></div>
+  </div>
+
+  <div class="card hide" id="komaCard">
+    <h2>ネームを直して、絵にする</h2>
+    <p class="lede">セリフは1コマ2つまで、1つ20文字以内。絵の欄に看板や画面の文字を書くと化けるので書かないでください。</p>
+    <div id="komaEd"></div>
+    <div class="row">
+      <button class="btn" id="drawAll">4コマまとめて描く</button>
+      <span id="drawState" style="font-size:12px;color:var(--muted)"></span>
+    </div>
+    <div id="drawErr" class="err hide"></div>
+  </div>
+
+  <div class="card hide" id="outCard">
+    <h2>版下を書き出す</h2>
+    <p class="lede">百先生の原稿と同じ 820 × 2538px に組みます。</p>
+    <label class="fl">注釈（コマの間に入る小さな文字・空欄可）</label>
+    <input type="text" id="n1" placeholder="1コマ目と2コマ目の間" style="margin-bottom:7px">
+    <input type="text" id="n2" placeholder="2コマ目と3コマ目の間" style="margin-bottom:7px">
+    <input type="text" id="n3" placeholder="3コマ目と4コマ目の間">
+    <div class="row" style="margin-top:14px">
+      <label class="chk" style="border:0"><input type="checkbox" id="x2">印刷用に2倍で書き出す</label>
+    </div>
+    <div class="row" style="margin-top:4px">
+      <button class="btn" id="dl" disabled>版下を書き出す</button>
+      <span id="dlNote" style="font-size:12px;color:var(--muted)"></span>
+    </div>
+  </div>
+
+  <div class="card hide" id="chkCard">
+    <h2>朱入れ</h2>
+    <p class="lede">書き出す前にここを見てください。崩れたコマは「描き直す」で引き直せます。</p>
+    <div id="checks"></div>
+  </div>
+
+</div>
+
+<div class="side">
+  <div class="genko">
+    <div class="cap"><span id="capIssue">ふむふむ瓦版</span><b>820 × 2538</b></div>
+    <div id="sheet"></div>
+  </div>
+  <div class="state" id="saveState">　</div>
+</div>
+</div>
+
+<script>
+const HOOK='https://hook.eu2.make.com/2zdng4azz3he6q8vexxuyxll3v8rnbyp';
+const W=820,PH=600,G=46,BD=3,TH=PH*4+G*3;
+const KANJI=['起','承','転','結'];
+const SHOTS=['バストアップ','顔のアップ','全身（立ち）','全身（ばんざい）','全身（後ろ姿）'];
+const FACES=['基本','笑顔（目を閉じる）','感激・大好き','お願い・上目づかい',
+ 'じと目・不機嫌','あわてる','メガネ（作業中）','イライラ・怒り'];
+const FACE_RULE={
+'基本':'小さい黒目をひとつ、向かって右。まつげなし',
+'笑顔（目を閉じる）':'目は弧を1本ずつ。うれしい・元気な顔',
+'感激・大好き':'両目とも大きな青い瞳、まつげあり。クローバーは中央寄りへ',
+'お願い・上目づかい':'片目だけ大きな青い瞳、まつげあり。もう片方はクローバー',
+'じと目・不機嫌':'まぶたの水平線で半目。黒目は小さいまま',
+'あわてる':'黒目は小さいまま、まつげとハイライトは付けない。汗を足し、口は大きく開ける',
+'メガネ（作業中）':'丸メガネをクローバーの上に。黒目はメガネ越しに小さく',
+'イライラ・怒り':'じと目を土台に、つり眉を向かって右に1本、口をへの字、こめかみに青い怒りマークを1つ'};
+const CHECKS=['クローバーが顔の中央、小さな目が左右に1つずつある','指定した表情になっている',
+'口がクローバーより下にある','髪が茶色のきのこ型。ピンクや長髪でない',
+'白猫が向かって右上、緑の花が向かって左上','ほっぺのハートが左右にある',
+'1.6〜1.7頭身。首が生えていない','指が描かれていない','影やグラデーションがない',
+'セリフ以外の文字が絵に入っていない','4コマで絵柄が揃っている'];
+
+let S={issue:'',month:'',theme:'',notes:['','',''],
+ koma:[0,1,2,3].map(()=>({art:'',lines:['',''],shot:'バストアップ',face:'基本'}))};
+let imgs=[null,null,null,null];
+const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
+
+function save(){try{localStorage.setItem('yonkoma',JSON.stringify(S));
+ $('#saveState').textContent='保存しました';
+ setTimeout(()=>$('#saveState').textContent='　',1400);}catch(e){}}
+function load(){try{const d=JSON.parse(localStorage.getItem('yonkoma'));
+ if(d){S={...S,...d};$('#issue').value=S.issue||'';$('#month').value=S.month||'';
+ $('#theme').value=S.theme||'';$('#n1').value=S.notes[0]||'';$('#n2').value=S.notes[1]||'';
+ $('#n3').value=S.notes[2]||'';
+ if(S.koma.some(k=>k.art||k.lines.some(Boolean))){show();drawEd();}}}catch(e){}
+ render();}
+function show(){['#komaCard','#outCard','#chkCard'].forEach(s=>$(s).classList.remove('hide'));}
+
+function render(){
+  $('#capIssue').textContent=S.issue||'ふむふむ瓦版';
+  const sh=$('#sheet');sh.innerHTML='';
+  S.koma.forEach((k,i)=>{
+    const f=document.createElement('div');
+    const has=imgs[i]||k.art||k.lines.some(Boolean);
+    f.className='frame'+(has?'':' empty');
+    if(imgs[i]){const im=document.createElement('img');im.src=imgs[i].src;f.appendChild(im);}
+    else{k.lines.filter(Boolean).forEach(t=>{const b=document.createElement('div');
+      b.className='fuki';b.textContent=t;f.appendChild(b);});
+      if(k.art){const a=document.createElement('div');a.className='art';a.textContent=k.art;f.appendChild(a);}}
+    const n=document.createElement('span');n.className='no';n.textContent=i+1;f.appendChild(n);
+    sh.appendChild(f);
+    if(i<3&&S.notes[i]){const g=document.createElement('div');
+      g.style.cssText='font-size:8.5px;color:#888;text-align:right;margin:-4.4% 0 4.4%';
+      g.textContent=S.notes[i];sh.appendChild(g);}
+  });
+  const n=imgs.filter(Boolean).length;
+  $('#dl').disabled=n<4;
+  $('#dlNote').textContent=n<4?`4枚そろうと押せます（いま${n}枚）`:'';
+}
+
+function drawEd(){
+  const w=$('#komaEd');w.innerHTML='';
+  S.koma.forEach((k,i)=>{
+    const d=document.createElement('div');d.className='koma';
+    d.innerHTML=`<div class="ttl">${i+1}コマ目<em>${KANJI[i]}</em></div>
+      <label class="fl">構図</label>
+      <select data-k="${i}" data-f="shot">${SHOTS.map(s=>`<option>${s}</option>`).join('')}</select>
+      <label class="fl">表情</label>
+      <select data-k="${i}" data-f="face">${FACES.map(s=>`<option>${s}</option>`).join('')}</select>
+      <label class="fl">絵（看板や画面の文字は書かない）</label>
+      <textarea rows="2" data-k="${i}" data-f="art"></textarea>
+      <label class="fl">セリフ 1</label><textarea rows="1" data-k="${i}" data-f="0"></textarea>
+      <div class="cnt" data-c="${i}-0"></div>
+      <label class="fl">セリフ 2（なくてよい）</label><textarea rows="1" data-k="${i}" data-f="1"></textarea>
+      <div class="cnt" data-c="${i}-1"></div>
+      <div class="row"><button class="btn sm" data-draw="${i}">このコマを描く</button>
+      <span class="ks" data-ks="${i}" style="font-size:12px;color:#8B8378"></span></div>`;
+    w.appendChild(d);
+    d.querySelector('[data-f=shot]').value=k.shot||'バストアップ';
+    d.querySelector('[data-f=face]').value=k.face||'基本';
+    d.querySelector('[data-f=art]').value=k.art;
+    d.querySelector('[data-f="0"]').value=k.lines[0]||'';
+    d.querySelector('[data-f="1"]').value=k.lines[1]||'';
+  });
+  const upd=e=>{const t=e.target,i=+t.dataset.k,f=t.dataset.f;if(f===undefined)return;
+    if(f==='art')S.koma[i].art=t.value;
+    else if(f==='shot')S.koma[i].shot=t.value;
+    else if(f==='face')S.koma[i].face=t.value;
+    else S.koma[i].lines[+f]=t.value;
+    count();render();save();};
+  w.oninput=upd;w.onchange=upd;
+  w.onclick=e=>{const b=e.target.closest('[data-draw]');if(b)drawOne(+b.dataset.draw);};
+  count();
+}
+function count(){$$('[data-c]').forEach(el=>{const [i,j]=el.dataset.c.split('-').map(Number);
+  const n=(S.koma[i].lines[j]||'').length;el.textContent=n?`${n} / 20`:'';
+  el.classList.toggle('over',n>20);});}
+
+$('#issue').oninput=e=>{S.issue=e.target.value;render();save();};
+$('#month').oninput=e=>{S.month=e.target.value;save();};
+$('#theme').oninput=e=>{S.theme=e.target.value;save();};
+['n1','n2','n3'].forEach((id,i)=>$('#'+id).oninput=e=>{S.notes[i]=e.target.value;render();save();});
+$('#blank').onclick=()=>{show();drawEd();render();};
+
+$('#gen').onclick=async()=>{
+  const th=$('#theme').value.trim(),err=$('#genErr');err.classList.add('hide');
+  if(!th){err.textContent='テーマを入れてください。';err.classList.remove('hide');return;}
+  const b=$('#gen');b.disabled=true;b.innerHTML='<span class="spin"></span>考えています';
+  try{
+    const u=HOOK+'?theme='+encodeURIComponent(th)+'&month='+encodeURIComponent($('#month').value.trim());
+    const r=await fetch(u);
+    if(!r.ok)throw new Error('通信に失敗しました（'+r.status+'）');
+    let t=(await r.text()).trim();
+    if(t==='Accepted')throw new Error('Makeが「Accepted」を返しました。もう一度押してください。');
+    t=t.replace(/```json/g,'').replace(/```/g,'').trim();
+    const m=t.match(/\[[\s\S]*\]/);if(m)t=m[0];
+    const arr=JSON.parse(t);
+    if(!Array.isArray(arr)||arr.length!==4)throw new Error('4コマ分の形になりませんでした');
+    S.koma=arr.map((k,i)=>({art:String(k.art||''),
+      lines:[String((k.lines||[])[0]||''),String((k.lines||[])[1]||'')],
+      shot:S.koma[i].shot||'バストアップ',face:S.koma[i].face||'基本'}));
+    imgs=[null,null,null,null];
+    show();drawEd();render();save();
+    $('#komaCard').scrollIntoView({behavior:'smooth',block:'start'});
+  }catch(e){err.textContent=e.message;err.classList.remove('hide');}
+  b.disabled=false;b.textContent='ネームを作る';
+};
+
+async function drawOne(i){
+  const k=S.koma[i],st=$(`[data-ks="${i}"]`),err=$('#drawErr');err.classList.add('hide');
+  if(!k.art){err.textContent=`${i+1}コマ目の「絵」が空です。`;err.classList.remove('hide');return;}
+  st.innerHTML='<span class="spin"></span>描いています（1分ほど）';
+  try{
+    const p=new URLSearchParams({mode:'image',shot:k.shot||'バストアップ',
+      face:(k.face||'基本')+'　'+(FACE_RULE[k.face||'基本']||''),
+      art:k.art,lines:k.lines.filter(Boolean).map(l=>'「'+l+'」').join('　')||'なし'});
+    const r=await fetch(HOOK+'?'+p.toString());
+    if(!r.ok)throw new Error('通信に失敗しました（'+r.status+'）');
+    const bl=await r.blob();
+    if(bl.type.indexOf('image')<0)throw new Error('画像が返りませんでした。もう一度押してください。');
+    const im=new Image();
+    await new Promise((res,rej)=>{im.onload=res;im.onerror=rej;im.src=URL.createObjectURL(bl);});
+    imgs[i]=im;st.textContent='できました';render();
+  }catch(e){st.textContent='';err.textContent=`${i+1}コマ目：`+e.message;err.classList.remove('hide');}
+}
+
+$('#drawAll').onclick=async()=>{
+  const b=$('#drawAll');b.disabled=true;
+  for(let i=0;i<4;i++){$('#drawState').textContent=`${i+1}コマ目を描いています…`;await drawOne(i);}
+  $('#drawState').textContent='';b.disabled=false;
+};
+
+$('#dl').onclick=()=>{
+  const k=$('#x2').checked?2:1;
+  const c=document.createElement('canvas');c.width=W*k;c.height=TH*k;
+  const x=c.getContext('2d');x.imageSmoothingQuality='high';
+  x.fillStyle='#fff';x.fillRect(0,0,c.width,c.height);
+  let y=0;
+  imgs.forEach((im,i)=>{
+    const tgt=W/PH,src=im.width/im.height;
+    let sx=0,sy=0,sw=im.width,sh=im.height;
+    if(src>tgt){sw=im.height*tgt;sx=(im.width-sw)/2;}
+    else if(src<tgt){sh=im.width/tgt;sy=(im.height-sh)/2;}
+    x.drawImage(im,sx,sy,sw,sh,0,y*k,W*k,PH*k);
+    x.strokeStyle='#000';x.lineWidth=BD*k;
+    x.strokeRect(BD*k/2,y*k+BD*k/2,W*k-BD*k,PH*k-BD*k);
+    y+=PH;
+    if(i<3){const n=(S.notes[i]||'').trim();
+      if(n){x.fillStyle='#000';x.font=(21*k)+'px "Noto Sans JP",sans-serif';
+        x.textAlign='right';x.textBaseline='top';x.fillText(n,(W-8)*k,(y+12)*k);}
+      y+=G;}
+  });
+  c.toBlob(b=>{const a=document.createElement('a');a.href=URL.createObjectURL(b);
+    a.download=(S.issue?S.issue.replace(/[\/\\:*?"<>|\s]/g,'_'):'fumufumu')+'_4koma.png';
+    a.click();setTimeout(()=>URL.revokeObjectURL(a.href),4000);},'image/png');
+};
+
+const cw=$('#checks');
+CHECKS.forEach(t=>{const l=document.createElement('label');l.className='chk';
+  l.innerHTML=`<input type="checkbox"><span>${t}</span>`;
+  l.querySelector('input').onchange=e=>{l.style.opacity=e.target.checked?.5:1;};
+  cw.appendChild(l);});
+
+load();
+</script>
+</body>
+</html>
