@@ -7,7 +7,8 @@
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
 :root{--bg:#F7F7F8;--card:#FFFFFF;--line:#E4E4E7;--ink:#18181B;--sub:#71717A;
---accent:#2563EB;--accent-w:#DBEAFE;--ok:#16A34A;--danger:#DC2626;--r:10px;}
+--accent:#2563EB;--accent-w:#DBEAFE;--ok:#16A34A;--ok-w:#DCFCE7;--warn:#B45309;--warn-w:#FEF3C7;
+--danger:#DC2626;--r:10px;}
 *{box-sizing:border-box;}
 body{margin:0;font-family:"Noto Sans JP",-apple-system,system-ui,sans-serif;
  background:var(--bg);color:var(--ink);line-height:1.7;padding-bottom:60px;
@@ -17,11 +18,11 @@ button{font-family:inherit;cursor:pointer;}
  position:sticky;top:0;z-index:20;}
 .hdr h1{font-size:19px;font-weight:700;margin:0;letter-spacing:.02em;}
 .hdr .sub{color:var(--sub);font-size:12.5px;margin-top:2px;}
-.wrap{max-width:1080px;margin:0 auto;display:flex;gap:24px;padding:24px 20px 0;align-items:flex-start;}
+.wrap{max-width:1120px;margin:0 auto;display:flex;gap:24px;padding:24px 20px 0;align-items:flex-start;}
 .work{flex:1 1 auto;min-width:0;}
 .side{width:300px;flex:0 0 300px;position:sticky;top:88px;}
-@media(max-width:860px){.wrap{flex-direction:column;padding:16px 14px 0;gap:16px;}
- .side{width:100%;flex:none;order:2;}}
+@media(max-width:960px){.wrap{flex-direction:column;padding:16px 14px 0;gap:16px;}
+ .side{width:100%;flex:none;order:2;position:static;}}
 .card{background:var(--card);border:1px solid var(--line);border-radius:var(--r);
  padding:20px;margin-bottom:16px;}
 .card h2{font-size:16px;font-weight:700;margin:0 0 4px;}
@@ -39,14 +40,54 @@ input:focus,textarea:focus,select:focus{outline:0;border-color:var(--accent);
 .btn.ghost{background:#fff;border:1px solid var(--line);color:var(--ink);font-weight:500;}
 .btn.ghost:hover{background:#FAFAFA;opacity:1;}
 .btn.sm{padding:8px 13px;font-size:13px;}
+.btn.xs{padding:5px 10px;font-size:12px;font-weight:500;}
 .btn.go{background:var(--accent);width:100%;padding:15px;font-size:16px;}
+.btn.warnbtn{background:var(--warn);color:#fff;}
 .btn:focus-visible{outline:2px solid var(--accent);outline-offset:2px;}
+
 .koma{border:1px solid var(--line);border-radius:var(--r);padding:16px;margin-bottom:14px;}
-.koma .ttl{font-size:14px;font-weight:700;margin-bottom:12px;}
-.koma .ttl em{color:var(--sub);font-style:normal;font-weight:400;font-size:12.5px;margin-left:8px;}
-.koma textarea,.koma select,.koma input{margin-bottom:12px;}
+.koma.stale{border-color:#FCD34D;background:#FFFBEB;}
+.koma .ttl{font-size:14px;font-weight:700;margin-bottom:12px;display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
+.koma .ttl em{color:var(--sub);font-style:normal;font-weight:400;font-size:12.5px;}
+.badge{font-size:11.5px;font-weight:600;border-radius:99px;padding:2px 9px;line-height:1.6;}
+.badge.none{background:#F4F4F5;color:#71717A;}
+.badge.ok{background:var(--ok-w);color:#166534;}
+.badge.stale{background:var(--warn-w);color:#92400E;}
+.kbody{display:grid;grid-template-columns:300px 1fr;gap:18px;align-items:start;}
+@media(max-width:720px){.kbody{grid-template-columns:1fr;}}
+.shot{aspect-ratio:820/600;border:1px solid var(--line);border-radius:8px;overflow:hidden;
+ background:#FAFAFA;display:flex;align-items:center;justify-content:center;position:relative;}
+.shot img{width:100%;height:100%;object-fit:cover;display:block;}
+.shot .ph{color:#A1A1AA;font-size:12.5px;text-align:center;padding:0 12px;}
+.shot .busy{position:absolute;inset:0;background:rgba(255,255,255,.82);display:flex;
+ align-items:center;justify-content:center;font-size:12.5px;color:#3F3F46;flex-direction:column;gap:6px;}
+.vstrip{display:flex;gap:6px;overflow-x:auto;padding:8px 0 2px;min-height:8px;}
+.vthumb{flex:none;width:56px;border:2px solid transparent;border-radius:6px;padding:0;
+ background:#fff;position:relative;overflow:hidden;line-height:0;}
+.vthumb img{width:100%;aspect-ratio:820/600;object-fit:cover;display:block;border-radius:4px;}
+.vthumb.on{border-color:var(--accent);}
+.vthumb .n{position:absolute;left:2px;top:1px;background:rgba(0,0,0,.55);color:#fff;
+ font-size:9.5px;line-height:1.5;padding:0 4px;border-radius:4px;}
+.vthumb .x{position:absolute;right:1px;top:0px;background:rgba(0,0,0,.55);color:#fff;
+ font-size:10px;line-height:1.4;padding:0 4px;border-radius:4px;cursor:pointer;}
+.vinfo{font-size:11.5px;color:var(--sub);margin:2px 0 8px;}
+.warnbox{background:var(--warn-w);border:1px solid #FDE68A;border-radius:8px;padding:10px 12px;
+ font-size:12.5px;color:#78350F;margin-top:10px;display:flex;gap:8px;align-items:center;flex-wrap:wrap;}
+.kstat{font-size:12.5px;color:var(--sub);min-height:18px;margin-top:8px;}
+details.auto{border:1px solid var(--line);border-radius:8px;margin-bottom:14px;background:#FAFAFA;}
+details.auto>summary{list-style:none;cursor:pointer;padding:10px 13px;font-size:13px;
+ display:flex;align-items:center;gap:8px;}
+details.auto>summary::-webkit-details-marker{display:none;}
+details.auto>summary::before{content:'▸';color:var(--sub);font-size:11px;}
+details.auto[open]>summary::before{content:'▾';}
+details.auto>summary b{font-weight:600;}
+details.auto>summary .memo{color:var(--sub);font-size:12px;font-weight:400;}
+details.auto .inner{padding:0 13px 13px;}
+details.auto .inner select{margin-bottom:10px;background:#fff;}
 .cnt{font-size:12px;color:var(--sub);text-align:right;margin:-8px 0 12px;}
 .cnt.over{color:var(--danger);font-weight:600;}
+.cnt.warnlen{color:var(--warn);font-weight:600;}
+.koma textarea,.koma select,.koma input{margin-bottom:12px;}
 .row{display:flex;gap:10px;flex-wrap:wrap;align-items:center;}
 .grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px;}
 @media(max-width:520px){.grid2{grid-template-columns:1fr;}}
@@ -77,6 +118,21 @@ input:focus,textarea:focus,select:focus{outline:0;border-color:var(--accent);
  padding:9px 0;border-bottom:1px solid #F4F4F5;}
 .chk input{margin-top:4px;accent-color:var(--accent);flex:none;width:auto;}
 .state{font-size:12px;color:var(--sub);text-align:center;margin-top:10px;min-height:16px;}
+.topwarn{background:var(--warn-w);border:1px solid #FDE68A;border-radius:var(--r);
+ padding:13px 15px;font-size:13.5px;color:#78350F;margin-bottom:16px;display:flex;
+ gap:10px;align-items:center;flex-wrap:wrap;}
+.pv{border:1px solid var(--line);border-radius:8px;background:#FAFAFA;padding:10px;
+ max-height:520px;overflow:auto;text-align:center;margin-top:14px;}
+.pv img{max-width:260px;width:100%;border:1px solid var(--line);background:#fff;}
+.works{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px;}
+.wk{border:1px solid var(--line);border-radius:8px;padding:9px;background:#fff;}
+.wk .th{height:120px;background:#FAFAFA;border:1px solid var(--line);border-radius:5px;
+ overflow:hidden;display:flex;align-items:flex-start;justify-content:center;}
+.wk .th img{width:100%;object-fit:cover;object-position:top;}
+.wk .t{font-size:12.5px;font-weight:600;margin:7px 0 1px;overflow:hidden;
+ text-overflow:ellipsis;white-space:nowrap;}
+.wk .d{font-size:11px;color:var(--sub);margin-bottom:7px;}
+.empty-note{color:var(--sub);font-size:13px;}
 </style>
 </head>
 <body>
@@ -107,13 +163,20 @@ input:focus,textarea:focus,select:focus{outline:0;border-color:var(--accent);
     <div class="row" style="margin-top:10px">
       <button class="btn ghost sm" id="gen">ネームだけ作る</button>
       <button class="btn ghost sm" id="blank">白紙から書く</button>
+      <button class="btn ghost sm" id="reset">新しく作りはじめる</button>
     </div>
     <div id="genErr" class="err hide"></div>
   </div>
 
+  <div class="topwarn hide" id="topWarn">
+    <span id="topWarnTxt"></span>
+    <button class="btn warnbtn sm" id="fixAll">要るところをまとめて描き直す</button>
+  </div>
+
   <div class="card hide" id="komaCard">
     <h2>ネームを直して、絵にする</h2>
-    <p class="lede">セリフは1コマ2つまで、1つ20文字以内。絵の欄に看板や画面の文字を書くと化けるので書かないでください。</p>
+    <p class="lede">構図と表情はネームといっしょに自動で決まります。気になるコマだけ開いて直してください。<br>
+      セリフは1コマ2つまで、1つ20文字以内。10文字以下だと文字化けしにくいです。絵の欄に看板や画面の文字を書くと化けるので書かないでください。</p>
     <div id="komaEd"></div>
     <label class="chk" style="border:0;margin-bottom:6px"><input type="checkbox" id="chain" checked>
       前のコマに合わせて描く（服・小道具・背景を引き継ぐ）</label>
@@ -126,7 +189,7 @@ input:focus,textarea:focus,select:focus{outline:0;border-color:var(--accent);
 
   <div class="card hide" id="outCard">
     <h2>版下を書き出す</h2>
-    <p class="lede">百先生の原稿と同じ 820 × 2538px に組みます。</p>
+    <p class="lede">百先生の原稿と同じ 820 × 2538px に組みます。画面で確かめてから保存できます。</p>
     <label class="fl">注釈（コマの間に入る小さな文字・空欄可）</label>
     <input type="text" id="n1" placeholder="1コマ目と2コマ目の間" style="margin-bottom:7px">
     <input type="text" id="n2" placeholder="2コマ目と3コマ目の間" style="margin-bottom:7px">
@@ -135,15 +198,25 @@ input:focus,textarea:focus,select:focus{outline:0;border-color:var(--accent);
       <label class="chk" style="border:0"><input type="checkbox" id="x2">印刷用に2倍で書き出す</label>
     </div>
     <div class="row" style="margin-top:4px">
-      <button class="btn" id="dl" disabled>版下を書き出す</button>
+      <button class="btn" id="make" disabled>版下を組んで表示する</button>
+      <button class="btn ghost" id="dl" disabled>ダウンロード</button>
+      <button class="btn ghost" id="keep" disabled>この回を保存する</button>
       <span id="dlNote" style="font-size:12.5px;color:var(--sub)"></span>
     </div>
+    <div id="pv" class="pv hide"></div>
   </div>
 
   <div class="card hide" id="chkCard">
     <h2>朱入れ</h2>
-    <p class="lede">書き出す前にここを見てください。崩れたコマは「描き直す」で引き直せます。</p>
+    <p class="lede">書き出す前にここを見てください。崩れたコマは「描き直す」で引き直せます。前の絵は残るので、いつでも戻せます。</p>
     <div id="checks"></div>
+  </div>
+
+  <div class="card">
+    <h2>これまでの回</h2>
+    <p class="lede">保存した回はここに並びます。開くと、その回の絵とネームがそのまま戻ります。</p>
+    <div id="works" class="works"></div>
+    <div id="worksEmpty" class="empty-note">まだ保存された回はありません。</div>
   </div>
 
 </div>
@@ -179,30 +252,92 @@ const CHECKS=['クローバーが顔の中央、小さな目が左右に1つず�
 '1.6〜1.7頭身。首が生えていない','指が描かれていない','影やグラデーションがない',
 'セリフ以外の文字が絵に入っていない','4コマで絵柄が揃っている'];
 
-let S={issue:'',month:'',theme:'',notes:['','',''],
- koma:[0,1,2,3].map(()=>({art:'',lines:['',''],shot:'バストアップ',face:'基本'}))};
-let imgs=[null,null,null,null];
 const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
+const blank=()=>({art:'',lines:['',''],shot:'バストアップ',face:'基本'});
 
-function save(){try{localStorage.setItem('yonkoma',JSON.stringify(S));
- $('#saveState').textContent='保存しました';
- setTimeout(()=>$('#saveState').textContent='　',1400);}catch(e){}}
-function load(){try{const d=JSON.parse(localStorage.getItem('yonkoma'));
- if(d){S={...S,...d};$('#issue').value=S.issue||'';$('#month').value=S.month||'';
- $('#theme').value=S.theme||'';$('#n1').value=S.notes[0]||'';$('#n2').value=S.notes[1]||'';
- $('#n3').value=S.notes[2]||'';
- if(S.koma.some(k=>k.art||k.lines.some(Boolean))){show();drawEd();}}}catch(e){}
- render();}
+let S={issue:'',month:'',theme:'',notes:['','',''],koma:[0,1,2,3].map(blank)};
+let V=[[],[],[],[]];          // コマごとの絵の履歴
+let SEL=[-1,-1,-1,-1];        // いま選んでいる版
+let IMG=[null,null,null,null];// 選んでいる版の Image（版下組みに使う）
+let BUSY=[false,false,false,false];
+let sheetBlob=null;
+let seq=1;
+
+/* ---------------- 保存（IndexedDB） ---------------- */
+let db=null;
+function openDB(){return new Promise(res=>{
+  let r;try{r=indexedDB.open('yonkoma',1);}catch(e){return res(null);}
+  r.onupgradeneeded=e=>{const d=e.target.result;
+    if(!d.objectStoreNames.contains('state'))d.createObjectStore('state',{keyPath:'id'});
+    if(!d.objectStoreNames.contains('works'))d.createObjectStore('works',{keyPath:'id'});};
+  r.onsuccess=e=>res(e.target.result);
+  r.onerror=()=>res(null);});}
+function st(name,mode){return db.transaction(name,mode).objectStore(name);}
+function dbPut(name,val){return new Promise((res,rej)=>{if(!db)return res();
+  const q=st(name,'readwrite').put(val);q.onsuccess=()=>res();q.onerror=()=>rej(q.error);});}
+function dbGet(name,key){return new Promise(res=>{if(!db)return res(null);
+  const q=st(name,'readonly').get(key);q.onsuccess=()=>res(q.result||null);q.onerror=()=>res(null);});}
+function dbAll(name){return new Promise(res=>{if(!db)return res([]);
+  const q=st(name,'readonly').getAll();q.onsuccess=()=>res(q.result||[]);q.onerror=()=>res([]);});}
+function dbDel(name,key){return new Promise(res=>{if(!db)return res();
+  const q=st(name,'readwrite').delete(key);q.onsuccess=()=>res();q.onerror=()=>res();});}
+
+let saveT=null;
+function save(){
+  try{localStorage.setItem('yonkoma',JSON.stringify(S));}catch(e){}
+  clearTimeout(saveT);
+  saveT=setTimeout(async()=>{
+    if(!db)return;
+    const V2=V.map(list=>list.map(v=>({id:v.id,ts:v.ts,blob:v.blob,shot:v.shot,
+      face:v.face,art:v.art,lines:v.lines,prevId:v.prevId})));
+    try{await dbPut('state',{id:'current',S,V:V2,SEL,seq});
+      $('#saveState').textContent='保存しました';
+      setTimeout(()=>{if($('#saveState').textContent==='保存しました')$('#saveState').textContent='　';},1400);
+    }catch(e){$('#saveState').textContent='保存できませんでした';}
+  },500);
+}
+
+/* ---------------- 履歴のたすけ ---------------- */
+const cur=i=>(SEL[i]>=0?V[i][SEL[i]]:null)||null;
+function vurl(v){if(!v._url)v._url=URL.createObjectURL(v.blob);return v._url;}
+function prevId(i){for(let j=i-1;j>=0;j--){const v=cur(j);if(v)return v.id;}return null;}
+function prevImg(i){for(let j=i-1;j>=0;j--){if(IMG[j])return IMG[j];}return null;}
+function sameLines(a,b){return (a[0]||'')===(b[0]||'')&&(a[1]||'')===(b[1]||'');}
+function staleReason(i){
+  const v=cur(i);if(!v)return null;
+  const k=S.koma[i];
+  if(v.art!==k.art||!sameLines(v.lines,k.lines)||v.shot!==k.shot||v.face!==k.face)
+    return '書いた内容が変わっています';
+  if($('#chain').checked&&i>0&&(v.prevId||null)!==prevId(i))
+    return '前のコマが描き直されました';
+  return null;
+}
+function loadImg(i){
+  const v=cur(i);
+  if(!v){IMG[i]=null;return Promise.resolve();}
+  return new Promise(res=>{const im=new Image();
+    im.onload=()=>{IMG[i]=im;res();};im.onerror=()=>{IMG[i]=null;res();};im.src=vurl(v);});
+}
+function pushVersion(i,blob,pid){
+  const k=S.koma[i];
+  V[i].push({id:'v'+(seq++),ts:Date.now(),blob,shot:k.shot,face:k.face,
+    art:k.art,lines:[k.lines[0]||'',k.lines[1]||''],prevId:pid});
+  if(V[i].length>8){const gone=V[i].shift();if(gone._url)URL.revokeObjectURL(gone._url);}
+  SEL[i]=V[i].length-1;
+}
+
+/* ---------------- 画面をつくる ---------------- */
 function show(){['#komaCard','#outCard','#chkCard'].forEach(s=>$(s).classList.remove('hide'));}
 
-function render(){
+function renderSheet(){
   $('#capIssue').textContent=S.issue||'ふむふむ瓦版';
   const sh=$('#sheet');sh.innerHTML='';
   S.koma.forEach((k,i)=>{
     const f=document.createElement('div');
-    const has=imgs[i]||k.art||k.lines.some(Boolean);
+    const v=cur(i);
+    const has=v||k.art||k.lines.some(Boolean);
     f.className='frame'+(has?'':' empty');
-    if(imgs[i]){const im=document.createElement('img');im.src=imgs[i].src;f.appendChild(im);}
+    if(v){const im=document.createElement('img');im.src=vurl(v);f.appendChild(im);}
     else{k.lines.filter(Boolean).forEach(t=>{const b=document.createElement('div');
       b.className='fuki';b.textContent=t;f.appendChild(b);});
       if(k.art){const a=document.createElement('div');a.className='art';a.textContent=k.art;f.appendChild(a);}}
@@ -212,32 +347,60 @@ function render(){
       g.style.cssText='font-size:8.5px;color:#888;text-align:right;margin:-4.4% 0 4.4%';
       g.textContent=S.notes[i];sh.appendChild(g);}
   });
-  const n=imgs.filter(Boolean).length;
-  $('#dl').disabled=n<4;
+  const n=[0,1,2,3].filter(i=>IMG[i]).length;
+  $('#make').disabled=n<4;
+  $('#keep').disabled=n<4;
   $('#dlNote').textContent=n<4?`4枚そろうと押せます（いま${n}枚）`:'';
+  if(n<4){$('#dl').disabled=true;}
+}
+
+function komaHTML(i){
+  return `<div class="ttl">${i+1}コマ目<em>${KANJI[i]}</em><span class="badge none" data-badge="${i}">まだ描いていません</span></div>
+  <div class="kbody">
+    <div>
+      <div class="shot" data-shot="${i}"></div>
+      <div class="vstrip" data-strip="${i}"></div>
+      <div class="vinfo" data-vinfo="${i}"></div>
+      <div class="row">
+        <button class="btn sm" data-draw="${i}">このコマを描く</button>
+        <button class="btn ghost sm" data-draw2="${i}" title="同じ指示で2枚いっしょに描いて、良いほうを選べます。料金は2枚分かかります">2枚描いて選ぶ</button>
+        <button class="btn ghost sm" data-undo="${i}" title="ひとつ前に描いた絵に戻します">1つ前に戻す</button>
+      </div>
+      <div class="kstat" data-ks="${i}"></div>
+      <div class="warnbox hide" data-warn="${i}">
+        <span data-warntxt="${i}"></span>
+        <button class="btn warnbtn xs" data-chain="${i}">このコマから後ろを描き直す</button>
+      </div>
+    </div>
+    <div>
+      <details class="auto">
+        <summary><span data-autosum="${i}"></span></summary>
+        <div class="inner">
+          <label class="fl">構図</label>
+          <select data-k="${i}" data-f="shot">${SHOTS.map(s=>`<option>${s}</option>`).join('')}</select>
+          <label class="fl">表情</label>
+          <select data-k="${i}" data-f="face">${FACES.map(s=>`<option>${s}</option>`).join('')}</select>
+        </div>
+      </details>
+      <label class="fl">絵（看板や画面の文字は書かない）</label>
+      <textarea rows="3" data-k="${i}" data-f="art"></textarea>
+      <label class="fl">セリフ 1</label><textarea rows="1" data-k="${i}" data-f="0"></textarea>
+      <div class="cnt" data-c="${i}-0"></div>
+      <label class="fl">セリフ 2（なくてよい）</label><textarea rows="1" data-k="${i}" data-f="1"></textarea>
+      <div class="cnt" data-c="${i}-1"></div>
+    </div>
+  </div>`;
 }
 
 function drawEd(){
   const w=$('#komaEd');w.innerHTML='';
   S.koma.forEach((k,i)=>{
-    const d=document.createElement('div');d.className='koma';
-    d.innerHTML=`<div class="ttl">${i+1}コマ目<em>${KANJI[i]}</em></div>
-      <label class="fl">構図</label>
-      <select data-k="${i}" data-f="shot">${SHOTS.map(s=>`<option>${s}</option>`).join('')}</select>
-      <label class="fl">表情</label>
-      <select data-k="${i}" data-f="face">${FACES.map(s=>`<option>${s}</option>`).join('')}</select>
-      <label class="fl">絵（看板や画面の文字は書かない）</label>
-      <textarea rows="2" data-k="${i}" data-f="art"></textarea>
-      <label class="fl">セリフ 1</label><textarea rows="1" data-k="${i}" data-f="0"></textarea>
-      <div class="cnt" data-c="${i}-0"></div>
-      <label class="fl">セリフ 2（なくてよい）</label><textarea rows="1" data-k="${i}" data-f="1"></textarea>
-      <div class="cnt" data-c="${i}-1"></div>
-      <div class="row"><button class="btn sm" data-draw="${i}">このコマを描く</button>
-      <span class="ks" data-ks="${i}" style="font-size:12.5px;color:#71717A"></span></div>`;
+    const d=document.createElement('div');d.className='koma';d.id='koma'+i;
+    d.innerHTML=komaHTML(i);
     w.appendChild(d);
     d.querySelector('[data-f=shot]').value=k.shot||'バストアップ';
     d.querySelector('[data-f=face]').value=k.face||'基本';
-    d.querySelector('[data-f=art]').value=k.art;
+    d.querySelector('[data-f=art]').value=k.art||'';
     d.querySelector('[data-f="0"]').value=k.lines[0]||'';
     d.querySelector('[data-f="1"]').value=k.lines[1]||'';
   });
@@ -246,15 +409,110 @@ function drawEd(){
     else if(f==='shot')S.koma[i].shot=t.value;
     else if(f==='face')S.koma[i].face=t.value;
     else S.koma[i].lines[+f]=t.value;
-    count();render();save();};
+    count();refreshAll();renderSheet();save();};
   w.oninput=upd;w.onchange=upd;
-  w.onclick=e=>{const b=e.target.closest('[data-draw]');if(b)drawOne(+b.dataset.draw);};
-  count();
+  w.onclick=e=>{
+    const t=e.target;
+    let b=t.closest('[data-draw]');           if(b){drawOne(+b.dataset.draw);return;}
+    b=t.closest('[data-draw2]');              if(b){drawTwo(+b.dataset.draw2);return;}
+    b=t.closest('[data-undo]');               if(b){undo(+b.dataset.undo);return;}
+    b=t.closest('[data-chain]');              if(b){redrawFrom(+b.dataset.chain);return;}
+    b=t.closest('[data-vx]');                 if(b){const[i,j]=b.dataset.vx.split('-').map(Number);delVersion(i,j);return;}
+    b=t.closest('[data-vsel]');               if(b){const[i,j]=b.dataset.vsel.split('-').map(Number);pick(i,j);return;}
+  };
+  count();refreshAll();
+}
+
+function refresh(i){
+  const box=$('#koma'+i);if(!box)return;
+  const v=cur(i),reason=staleReason(i);
+  const badge=box.querySelector(`[data-badge="${i}"]`);
+  badge.className='badge '+(!v?'none':reason?'stale':'ok');
+  badge.textContent=!v?'まだ描いていません':reason?'要・描き直し':'描けました';
+  box.classList.toggle('stale',!!reason);
+
+  const shot=box.querySelector(`[data-shot="${i}"]`);
+  shot.innerHTML='';
+  if(v){const im=document.createElement('img');im.src=vurl(v);shot.appendChild(im);}
+  else{const p=document.createElement('div');p.className='ph';
+    p.textContent='「このコマを描く」を押すと、ここに絵が出ます';shot.appendChild(p);}
+  if(BUSY[i]){const b=document.createElement('div');b.className='busy';
+    b.innerHTML='<span class="spin"></span>描いています';shot.appendChild(b);}
+
+  const strip=box.querySelector(`[data-strip="${i}"]`);
+  strip.innerHTML='';
+  V[i].forEach((vv,j)=>{
+    const btn=document.createElement('button');
+    btn.className='vthumb'+(j===SEL[i]?' on':'');
+    btn.dataset.vsel=i+'-'+j;
+    btn.title=new Date(vv.ts).toLocaleString('ja-JP');
+    btn.innerHTML=`<img src="${vurl(vv)}"><span class="n">${j+1}</span>`+
+      (V[i].length>1?`<span class="x" data-vx="${i}-${j}">×</span>`:'');
+    strip.appendChild(btn);
+  });
+  box.querySelector(`[data-vinfo="${i}"]`).textContent=
+    V[i].length>1?`${V[i].length}枚のうち ${SEL[i]+1}枚目を使っています（サムネで切り替え）`:
+    V[i].length===1?'1枚描けています':'';
+
+  const sum=box.querySelector(`[data-autosum="${i}"]`);
+  sum.innerHTML='';
+  const b1=document.createElement('b');b1.textContent=(S.koma[i].shot||'バストアップ')+'／'+(S.koma[i].face||'基本');
+  const m1=document.createElement('span');m1.className='memo';m1.textContent='直すときだけ開く';
+  sum.appendChild(b1);sum.appendChild(m1);
+
+  box.querySelector(`[data-draw="${i}"]`).textContent=v?'このコマを描き直す':'このコマを描く';
+  box.querySelector(`[data-undo="${i}"]`).disabled=SEL[i]<=0;
+
+  const wb=box.querySelector(`[data-warn="${i}"]`);
+  if(reason){wb.classList.remove('hide');
+    box.querySelector(`[data-warntxt="${i}"]`).textContent=reason+'。';}
+  else wb.classList.add('hide');
+}
+function refreshAll(){
+  [0,1,2,3].forEach(refresh);
+  const busy=BUSY.some(Boolean);
+  const bad=[0,1,2,3].filter(i=>staleReason(i));
+  const tw=$('#topWarn');
+  if(bad.length&&!busy){
+    tw.classList.remove('hide');
+    const from=Math.min(...bad);
+    $('#topWarnTxt').textContent=
+      bad.map(i=>i+1).join('・')+'コマ目が、いまの内容と合っていません。'+
+      (from<3?`${from+1}〜4コマ目を順に描き直すと揃います。`:'4コマ目を描き直すと揃います。');
+    $('#fixAll').dataset.from=from;
+  }else tw.classList.add('hide');
+  renderSheet();
+  ['#all','#gen','#drawAll','#fixAll','#reset','#blank','#keep'].forEach(s=>{
+    const el=$(s);if(el)el.disabled=busy?true:(s==='#keep'?el.disabled:false);});
+  if(busy){$('#make').disabled=true;$('#dl').disabled=true;}
+  [0,1,2,3].forEach(i=>{const b=$('#koma'+i);if(!b)return;
+    b.querySelector(`[data-draw="${i}"]`).disabled=busy;
+    b.querySelector(`[data-draw2="${i}"]`).disabled=busy;
+    b.querySelector(`[data-chain="${i}"]`).disabled=busy;
+    b.querySelector(`[data-undo="${i}"]`).disabled=busy||SEL[i]<=0;});
 }
 function count(){$$('[data-c]').forEach(el=>{const [i,j]=el.dataset.c.split('-').map(Number);
-  const n=(S.koma[i].lines[j]||'').length;el.textContent=n?`${n} / 20`:'';
-  el.classList.toggle('over',n>20);});}
+  const n=(S.koma[i].lines[j]||'').length;
+  el.textContent=n?`${n} / 20`+(n>10&&n<=20?'　長いと文字化けしやすいです':''):'';
+  el.classList.toggle('over',n>20);
+  el.classList.toggle('warnlen',n>10&&n<=20);});}
 
+/* ---------------- 版の切り替え ---------------- */
+async function pick(i,j){
+  if(BUSY.some(Boolean))return;
+  SEL[i]=j;await loadImg(i);refreshAll();save();
+}
+async function undo(i){if(SEL[i]>0)await pick(i,SEL[i]-1);}
+async function delVersion(i,j){
+  if(BUSY.some(Boolean))return;
+  const v=V[i][j];if(v&&v._url)URL.revokeObjectURL(v._url);
+  V[i].splice(j,1);
+  if(SEL[i]>=V[i].length)SEL[i]=V[i].length-1;
+  else if(SEL[i]>j)SEL[i]--;
+  await loadImg(i);refreshAll();save();
+}
+
+/* ---------------- ネーム ---------------- */
 function parseKoma(t){
   const m=t.match(/\[[\s\S]*\]/); const src=m?m[0]:t;
   try{const a=JSON.parse(src);if(Array.isArray(a))return a;}catch(e){}
@@ -266,20 +524,57 @@ function parseKoma(t){
     const lb=(b.match(/"lines"\s*:\s*\[([\s\S]*?)\]/)||[])[1]||'';
     const lines=[]; const re=/"((?:[^"\\]|\\.)*)"/g; let x;
     while((x=re.exec(lb))!==null)lines.push(x[1].replace(/\\"/g,'"'));
-    out.push({art:am[1].replace(/\\"/g,'"'),lines:[lines[0]||'',lines[1]||'']});
+    const sm=b.match(/"shot"\s*:\s*"([^"]*)"/), fm=b.match(/"face"\s*:\s*"([^"]*)"/);
+    out.push({art:am[1].replace(/\\"/g,'"'),lines:[lines[0]||'',lines[1]||''],
+      shot:sm?sm[1]:'',face:fm?fm[1]:''});
   });
   return out;
 }
 
-$('#issue').oninput=e=>{S.issue=e.target.value;render();save();};
-$('#month').oninput=e=>{S.month=e.target.value;save();};
-$('#theme').oninput=e=>{S.theme=e.target.value;save();};
-['n1','n2','n3'].forEach((id,i)=>$('#'+id).oninput=e=>{S.notes[i]=e.target.value;render();save();});
-$('#blank').onclick=()=>{show();drawEd();render();};
+/* 構図・表情は本人に選ばせない。ネームと一緒に決まった値を使い、
+   返ってこなかったコマだけ、絵とセリフから機械的に埋める */
+const FACE_HINT=[
+ [/怒|イライラ|ムカ|ぷんぷん|もう！|いい加減/,'イライラ・怒り'],
+ [/えっ|ええっ|あっ|まずい|大変|どうしよう|あわ|慌|急い|間に合わ|焦/,'あわてる'],
+ [/やった|うれし|嬉し|わーい|万歳|ばんざ|バンザ|喜|笑|楽し|よかった|ほっ/,'笑顔（目を閉じる）'],
+ [/すごい|最高|大好き|感激|うわあ|わあ|ありがた|感動|きれい|かわい/,'感激・大好き'],
+ [/お願い|たのむ|頼む|ください|くださ〜|どうか|お願/,'お願い・上目づかい'],
+ [/またか|やれやれ|しぶしぶ|むっ|じと|不機嫌|うーん|えー|しかたな|仕方な/,'じと目・不機嫌'],
+ [/パソコン|ノートPC|編集|作業|設定|操作|機械|カメラ|ドローン|スマホ|画面をのぞ|配線|アップデート/,'メガネ（作業中）']];
+const SHOT_HINT=[
+ [/ばんざい|万歳|両手を上げ|飛び上が|ガッツポーズ|喜んで/,'全身（ばんざい）'],
+ [/後ろ姿|背中|立ち去|帰って|去って|見送|とぼとぼ|うつむいて歩/,'全身（後ろ姿）'],
+ [/全身|立っている|歩いて|走って|並んで|集合/,'全身（立ち）']];
+function hint(list,txt,def){for(const [re,v] of list) if(re.test(txt))return v;return def;}
+function autoAssign(arr){
+  const out=arr.map(k=>({...k}));
+  // ネームが返してきた値をそのまま使う（言葉が一致するものだけ）
+  out.forEach(k=>{
+    k.shot=SHOTS.includes(k.shot)?k.shot:'';
+    k.face=FACES.includes(k.face)?k.face:'';
+  });
+  // 足りないところだけ埋める
+  let zenshin=out.filter(k=>k.shot&&k.shot.indexOf('全身')===0).length;
+  let up=out.filter(k=>k.shot==='顔のアップ').length;
+  out.forEach((k,i)=>{
+    const txt=(k.art||'')+'　'+(k.lines||[]).join('　');
+    if(!k.face)k.face=hint(FACE_HINT,txt,'基本');
+    if(!k.shot){
+      const z=hint(SHOT_HINT,k.art||'','');
+      if(z&&zenshin<1){k.shot=z;zenshin++;}
+      else if(i>=2&&up<1&&/えっ|まずい|やった|すごい|うわ|なんで|そんな/.test(txt)){
+        k.shot='顔のアップ';up++;}
+      else k.shot='バストアップ';
+    }
+  });
+  // 4コマとも同じ表情だと単調なので、1コマ目だけ基本に寄せる
+  if(out.every(k=>k.face===out[0].face)&&out[0].face!=='基本')out[0].face='基本';
+  return out;
+}
 
 async function genName(){
   const th=$('#theme').value.trim(),err=$('#genErr');err.classList.add('hide');
-  if(!th){err.textContent='テーマを入れてください。';err.classList.remove('hide');return;}
+  if(!th){err.textContent='テーマを入れてください。';err.classList.remove('hide');return false;}
   const b=$('#gen');b.disabled=true;b.innerHTML='<span class="spin"></span>考えています';
   try{
     const u=HOOK+'?theme='+encodeURIComponent(th)+'&month='+encodeURIComponent($('#month').value.trim());
@@ -290,18 +585,25 @@ async function genName(){
     t=t.replace(/```json/g,'').replace(/```/g,'').trim();
     const arr=parseKoma(t);
     if(!Array.isArray(arr)||arr.length!==4)throw new Error('4コマ分の形になりませんでした。もう一度押してください。');
-    S.koma=arr.map((k,i)=>({art:String(k.art||''),
+    S.koma=autoAssign(arr).map(k=>({art:String(k.art||''),
       lines:[String((k.lines||[])[0]||''),String((k.lines||[])[1]||'')],
-      shot:S.koma[i].shot||'バストアップ',face:S.koma[i].face||'基本'}));
-    imgs=[null,null,null,null];
-    show();drawEd();render();save();
+      shot:k.shot,face:k.face}));
+    clearImages();
+    show();drawEd();save();
     $('#komaCard').scrollIntoView({behavior:'smooth',block:'start'});
-    b.disabled=false;b.textContent='ネームを作る';return true;
+    b.disabled=false;b.textContent='ネームだけ作る';return true;
   }catch(e){err.textContent=e.message;err.classList.remove('hide');}
-  b.disabled=false;b.textContent='ネームを作る';return false;
+  b.disabled=false;b.textContent='ネームだけ作る';return false;
 }
 $('#gen').onclick=genName;
 
+function clearImages(){
+  V.forEach(list=>list.forEach(v=>{if(v._url)URL.revokeObjectURL(v._url);}));
+  V=[[],[],[],[]];SEL=[-1,-1,-1,-1];IMG=[null,null,null,null];
+  sheetBlob=null;$('#pv').classList.add('hide');$('#pv').innerHTML='';$('#dl').disabled=true;
+}
+
+/* ---------------- 絵を描く ---------------- */
 function shrink(im){
   const w=768,h=Math.round(im.height*w/im.width);
   const c=document.createElement('canvas');c.width=w;c.height=h;
@@ -309,72 +611,121 @@ function shrink(im){
   x.drawImage(im,0,0,w,h);
   return c.toDataURL('image/jpeg',.85).split(',')[1];
 }
-function prevImage(i){
-  for(let j=i-1;j>=0;j--) if(imgs[j]) return imgs[j];
-  return null;
+async function callImage(i){
+  const k=S.koma[i];
+  const pv=$('#chain').checked?prevImg(i):null;
+  const body={mode:'image',shot:k.shot||'バストアップ',
+    face:(k.face||'基本')+'　'+(FACE_RULE[k.face||'基本']||''),
+    art:k.art,lines:k.lines.filter(Boolean).map(l=>'「'+l+'」').join('　')||'なし'};
+  if(pv) body.prev=shrink(pv);
+  const r=await fetch(HOOK,{method:'POST',
+    headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
+  if(!r.ok)throw new Error('通信に失敗しました（'+r.status+'）');
+  const bl=await r.blob();
+  if(bl.type.indexOf('image')<0)throw new Error('画像が返りませんでした');
+  return bl;
 }
-async function drawOne(i){
-  const k=S.koma[i],st=$(`[data-ks="${i}"]`),err=$('#drawErr');err.classList.add('hide');
-  if(!k.art){err.textContent=`${i+1}コマ目の「絵」が空です。`;err.classList.remove('hide');return;}
-  const pv=$('#chain').checked?prevImage(i):null;
-  st.innerHTML='<span class="spin"></span>'+(pv?'前のコマに合わせて描いています':'描いています')+'（1分ほど）';
+function tick(el,label){
+  const t0=Date.now();
+  const f=()=>{const s=Math.floor((Date.now()-t0)/1000);
+    el.innerHTML='<span class="spin"></span>'+label+'（'+s+'秒）';};
+  f();const id=setInterval(f,1000);
+  return ()=>clearInterval(id);
+}
+async function drawOne(i,quiet){
+  const k=S.koma[i],stt=$(`[data-ks="${i}"]`),err=$('#drawErr');
+  if(!quiet)err.classList.add('hide');
+  if(!k.art){err.textContent=`${i+1}コマ目の「絵」が空です。`;err.classList.remove('hide');return false;}
+  const pid=$('#chain').checked?prevId(i):null;
+  BUSY[i]=true;refreshAll();
+  const stop=tick(stt,cur(i)?'描き直しています':'描いています');
   try{
-    const body={mode:'image',shot:k.shot||'バストアップ',
-      face:(k.face||'基本')+'　'+(FACE_RULE[k.face||'基本']||''),
-      art:k.art,lines:k.lines.filter(Boolean).map(l=>'「'+l+'」').join('　')||'なし'};
-    if(pv) body.prev=shrink(pv);
-    const r=await fetch(HOOK,{method:'POST',
-      headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
-    if(!r.ok)throw new Error('通信に失敗しました（'+r.status+'）');
-    const bl=await r.blob();
-    if(bl.type.indexOf('image')<0)throw new Error('画像が返りませんでした。もう一度押してください。');
-    const im=new Image();
-    await new Promise((res,rej)=>{im.onload=res;im.onerror=rej;im.src=URL.createObjectURL(bl);});
-    imgs[i]=im;st.textContent='できました';render();
-  }catch(e){st.textContent='';err.textContent=`${i+1}コマ目：`+e.message;err.classList.remove('hide');}
+    let bl;
+    try{bl=await callImage(i);}
+    catch(e1){stt.innerHTML='<span class="spin"></span>もう一度試しています';bl=await callImage(i);}
+    pushVersion(i,bl,pid);
+    await loadImg(i);
+    stop();stt.textContent='できました';
+    BUSY[i]=false;refreshAll();save();return true;
+  }catch(e){
+    stop();stt.textContent='';
+    BUSY[i]=false;refreshAll();
+    err.textContent=`${i+1}コマ目：`+e.message+'。もう一度押してみてください。';
+    err.classList.remove('hide');return false;
+  }
 }
+async function drawTwo(i){
+  const k=S.koma[i],stt=$(`[data-ks="${i}"]`),err=$('#drawErr');err.classList.add('hide');
+  if(!k.art){err.textContent=`${i+1}コマ目の「絵」が空です。`;err.classList.remove('hide');return;}
+  const pid=$('#chain').checked?prevId(i):null;
+  BUSY[i]=true;refreshAll();
+  const stop=tick(stt,'2枚いっしょに描いています');
+  try{
+    const rs=await Promise.allSettled([callImage(i),callImage(i)]);
+    const ok=rs.filter(r=>r.status==='fulfilled').map(r=>r.value);
+    if(!ok.length)throw new Error('2枚とも描けませんでした');
+    ok.forEach(bl=>pushVersion(i,bl,pid));
+    await loadImg(i);
+    stop();stt.textContent=ok.length===2?'2枚できました。サムネで見くらべてください':'1枚だけできました';
+    BUSY[i]=false;refreshAll();save();
+  }catch(e){
+    stop();stt.textContent='';BUSY[i]=false;refreshAll();
+    err.textContent=`${i+1}コマ目：`+e.message+'。';err.classList.remove('hide');
+  }
+}
+async function redrawFrom(i){
+  for(let j=i;j<4;j++){
+    if(j>i&&!cur(j)&&!S.koma[j].art)continue;
+    const ok=await drawOne(j,true);
+    if(!ok)return;
+  }
+}
+$('#fixAll').onclick=e=>redrawFrom(+(e.currentTarget.dataset.from||0));
+
+$('#drawAll').onclick=async()=>{
+  for(let i=0;i<4;i++){$('#drawState').textContent=`${i+1}コマ目を描いています…`;
+    const ok=await drawOne(i,true);if(!ok)break;}
+  $('#drawState').textContent='';
+};
 
 $('#all').onclick=async()=>{
-  const b=$('#all'),st=$('#allState');
+  const b=$('#all'),stt=$('#allState');
   b.disabled=true;$('#gen').disabled=true;
-  const step=t=>{st.innerHTML='<span class="spin"></span>'+t;};
+  const step=t=>{stt.innerHTML='<span class="spin"></span>'+t;};
   try{
     step('ネームを考えています…（1/6）');
     const ok=await genName();
-    if(!ok){st.textContent='';b.disabled=false;$('#gen').disabled=false;return;}
+    if(!ok){stt.textContent='';b.disabled=false;$('#gen').disabled=false;return;}
     for(let i=0;i<4;i++){
       step(`${i+1}コマ目を描いています…（${i+2}/6）　残り約${(4-i)}分`);
-      await drawOne(i);
-      if(!imgs[i]){st.innerHTML='<span style="color:#DC2626">'+
+      const done=await drawOne(i,true);
+      if(!done){stt.innerHTML='<span style="color:#DC2626">'+
         `${i+1}コマ目でつまずきました。そのコマの「このコマを描く」を押してください。</span>`;
         b.disabled=false;$('#gen').disabled=false;return;}
     }
     step('版下に組んでいます…（6/6）');
-    await new Promise(r=>setTimeout(r,300));
-    exportPng();
-    st.innerHTML='<span style="color:#16A34A">できました。版下をダウンロードしました。</span>';
-  }catch(e){st.innerHTML='<span style="color:#DC2626">'+e.message+'</span>';}
-  b.disabled=false;$('#gen').disabled=false;
+    await buildSheet();
+    downloadSheet();
+    stt.innerHTML='<span style="color:#16A34A">できました。版下を表示して、ダウンロードもしました。</span>';
+    $('#outCard').scrollIntoView({behavior:'smooth',block:'start'});
+  }catch(e){stt.innerHTML='<span style="color:#DC2626">'+e.message+'</span>';}
+  b.disabled=false;$('#gen').disabled=false;refreshAll();
 };
 
-$('#drawAll').onclick=async()=>{
-  const b=$('#drawAll');b.disabled=true;
-  for(let i=0;i<4;i++){$('#drawState').textContent=`${i+1}コマ目を描いています…`;await drawOne(i);}
-  $('#drawState').textContent='';b.disabled=false;
-};
-
-function exportPng(){
-  const k=$('#x2').checked?2:1;
-  const c=document.createElement('canvas');c.width=W*k;c.height=TH*k;
+/* ---------------- 版下 ---------------- */
+function drawSheetTo(c,k){
+  c.width=W*k;c.height=TH*k;
   const x=c.getContext('2d');x.imageSmoothingQuality='high';
   x.fillStyle='#fff';x.fillRect(0,0,c.width,c.height);
   let y=0;
-  imgs.forEach((im,i)=>{
-    const tgt=W/PH,src=im.width/im.height;
-    let sx=0,sy=0,sw=im.width,sh=im.height;
-    if(src>tgt){sw=im.height*tgt;sx=(im.width-sw)/2;}
-    else if(src<tgt){sh=im.width/tgt;sy=(im.height-sh)/2;}
-    x.drawImage(im,sx,sy,sw,sh,0,y*k,W*k,PH*k);
+  IMG.forEach((im,i)=>{
+    if(im){
+      const tgt=W/PH,src=im.width/im.height;
+      let sx=0,sy=0,sw=im.width,sh=im.height;
+      if(src>tgt){sw=im.height*tgt;sx=(im.width-sw)/2;}
+      else if(src<tgt){sh=im.width/tgt;sy=(im.height-sh)/2;}
+      x.drawImage(im,sx,sy,sw,sh,0,y*k,W*k,PH*k);
+    }
     x.strokeStyle='#000';x.lineWidth=BD*k;
     x.strokeRect(BD*k/2,y*k+BD*k/2,W*k-BD*k,PH*k-BD*k);
     y+=PH;
@@ -383,19 +734,159 @@ function exportPng(){
         x.textAlign='right';x.textBaseline='top';x.fillText(n,(W-8)*k,(y+12)*k);}
       y+=G;}
   });
-  c.toBlob(b=>{const a=document.createElement('a');a.href=URL.createObjectURL(b);
-    a.download=(S.issue?S.issue.replace(/[\/\\:*?"<>|\s]/g,'_'):'fumufumu')+'_4koma.png';
-    a.click();setTimeout(()=>URL.revokeObjectURL(a.href),4000);},'image/png');
 }
-$('#dl').onclick=exportPng;
+function buildSheet(){
+  return new Promise(res=>{
+    const k=$('#x2').checked?2:1;
+    const c=document.createElement('canvas');
+    drawSheetTo(c,k);
+    c.toBlob(b=>{
+      sheetBlob=b;
+      const pv=$('#pv');pv.classList.remove('hide');pv.innerHTML='';
+      const im=document.createElement('img');im.src=URL.createObjectURL(b);
+      im.alt='版下のプレビュー';pv.appendChild(im);
+      const cap=document.createElement('div');
+      cap.style.cssText='font-size:12px;color:#71717A;margin-top:8px';
+      cap.textContent=`${c.width} × ${c.height}px　押すと原寸で開きます`;
+      pv.appendChild(cap);
+      im.style.cursor='zoom-in';
+      im.onclick=()=>window.open(im.src,'_blank');
+      $('#dl').disabled=false;
+      res(b);
+    },'image/png');
+  });
+}
+function fname(ext){return (S.issue?S.issue.replace(/[\/\\:*?"<>|\s]/g,'_'):'fumufumu')+'_4koma.'+ext;}
+function downloadSheet(){
+  if(!sheetBlob)return;
+  const a=document.createElement('a');a.href=URL.createObjectURL(sheetBlob);
+  a.download=fname('png');a.click();setTimeout(()=>URL.revokeObjectURL(a.href),4000);
+}
+$('#make').onclick=async()=>{const b=$('#make');b.disabled=true;
+  b.innerHTML='<span class="spin"></span>組んでいます';
+  await buildSheet();b.textContent='版下を組んで表示する';b.disabled=false;};
+$('#dl').onclick=downloadSheet;
+
+/* ---------------- これまでの回 ---------------- */
+function jpeg(im,w){
+  return new Promise(res=>{
+    const h=Math.round(im.height*w/im.width);
+    const c=document.createElement('canvas');c.width=w;c.height=h;
+    const x=c.getContext('2d');x.fillStyle='#fff';x.fillRect(0,0,w,h);
+    x.drawImage(im,0,0,w,h);
+    c.toBlob(b=>res(b),'image/jpeg',.92);
+  });
+}
+$('#keep').onclick=async()=>{
+  const b=$('#keep');b.disabled=true;b.innerHTML='<span class="spin"></span>保存しています';
+  try{
+    const c=document.createElement('canvas');drawSheetTo(c,1);
+    const thumb=await new Promise(r=>c.toBlob(r,'image/jpeg',.8));
+    const frames=[];
+    for(let i=0;i<4;i++)frames.push(IMG[i]?await jpeg(IMG[i],1280):null);
+    await dbPut('works',{id:Date.now(),ts:Date.now(),issue:S.issue,month:S.month,
+      theme:S.theme,notes:[...S.notes],koma:JSON.parse(JSON.stringify(S.koma)),thumb,frames});
+    await renderWorks();
+    b.textContent='保存しました';setTimeout(()=>{b.textContent='この回を保存する';b.disabled=false;},1400);
+  }catch(e){b.textContent='保存できませんでした';b.disabled=false;}
+};
+async function renderWorks(){
+  const list=(await dbAll('works')).sort((a,b)=>b.ts-a.ts);
+  const box=$('#works');box.innerHTML='';
+  $('#worksEmpty').classList.toggle('hide',list.length>0);
+  list.forEach(w=>{
+    const d=document.createElement('div');d.className='wk';
+    const t=w.issue||(w.theme||'').slice(0,14)||'（無題）';
+    d.innerHTML=`<div class="th"></div><div class="t"></div>
+      <div class="d">${new Date(w.ts).toLocaleDateString('ja-JP')}</div>
+      <div class="row"><button class="btn xs" data-open="${w.id}">開く</button>
+      <button class="btn ghost xs" data-dl="${w.id}">保存</button>
+      <button class="btn ghost xs" data-del="${w.id}">削除</button></div>`;
+    d.querySelector('.t').textContent=t;
+    if(w.thumb){const im=document.createElement('img');im.src=URL.createObjectURL(w.thumb);
+      d.querySelector('.th').appendChild(im);}
+    box.appendChild(d);
+  });
+  box.onclick=async e=>{
+    let b=e.target.closest('[data-open]');
+    if(b){const w=list.find(x=>x.id==b.dataset.open);if(w)openWork(w);return;}
+    b=e.target.closest('[data-dl]');
+    if(b){const w=list.find(x=>x.id==b.dataset.dl);if(w&&w.thumb){
+      const a=document.createElement('a');a.href=URL.createObjectURL(w.thumb);
+      a.download=(w.issue||'fumufumu').replace(/[\/\\:*?"<>|\s]/g,'_')+'_4koma.jpg';a.click();}return;}
+    b=e.target.closest('[data-del]');
+    if(b){if(!confirm('この回を消します。よろしいですか。'))return;
+      await dbDel('works',+b.dataset.del);await renderWorks();return;}
+  };
+}
+async function openWork(w){
+  if([0,1,2,3].some(i=>cur(i))&&!confirm('いま作りかけのものは消えます。開きますか。'))return;
+  clearImages();
+  S={issue:w.issue||'',month:w.month||'',theme:w.theme||'',
+    notes:[...(w.notes||['','',''])],koma:JSON.parse(JSON.stringify(w.koma||[0,1,2,3].map(blank)))};
+  $('#issue').value=S.issue;$('#month').value=S.month;$('#theme').value=S.theme;
+  $('#n1').value=S.notes[0]||'';$('#n2').value=S.notes[1]||'';$('#n3').value=S.notes[2]||'';
+  (w.frames||[]).forEach((bl,i)=>{
+    if(!bl)return;
+    V[i]=[{id:'v'+(seq++),ts:w.ts,blob:bl,shot:S.koma[i].shot,face:S.koma[i].face,
+      art:S.koma[i].art,lines:[S.koma[i].lines[0]||'',S.koma[i].lines[1]||''],
+      prevId:null}];
+    SEL[i]=0;
+  });
+  for(let i=0;i<4;i++)await loadImg(i);
+  [1,2,3].forEach(i=>{if(V[i][0]&&V[i-1][0])V[i][0].prevId=V[i-1][0].id;});
+  show();drawEd();save();
+  $('#komaCard').scrollIntoView({behavior:'smooth',block:'start'});
+}
+
+/* ---------------- そのほかの入力 ---------------- */
+$('#issue').oninput=e=>{S.issue=e.target.value;renderSheet();save();};
+$('#month').oninput=e=>{S.month=e.target.value;save();};
+$('#theme').oninput=e=>{S.theme=e.target.value;save();};
+['n1','n2','n3'].forEach((id,i)=>$('#'+id).oninput=e=>{S.notes[i]=e.target.value;renderSheet();save();});
+$('#blank').onclick=()=>{show();drawEd();};
+$('#chain').onchange=()=>{refreshAll();};
+$('#reset').onclick=async()=>{
+  if(!confirm('いまの内容（ネームと絵）を消して、白紙から作りはじめます。よろしいですか。\n※「これまでの回」に保存したものは消えません。'))return;
+  clearImages();
+  S={issue:'',month:S.month||'',theme:'',notes:['','',''],koma:[0,1,2,3].map(blank)};
+  $('#issue').value='';$('#theme').value='';
+  $('#n1').value='';$('#n2').value='';$('#n3').value='';
+  $('#allState').textContent='';$('#genErr').classList.add('hide');$('#drawErr').classList.add('hide');
+  drawEd();save();
+  $$('#checks input').forEach(c=>{c.checked=false;c.closest('label').style.opacity=1;});
+  window.scrollTo({top:0,behavior:'smooth'});
+};
 
 const cw=$('#checks');
 CHECKS.forEach(t=>{const l=document.createElement('label');l.className='chk';
-  l.innerHTML=`<input type="checkbox"><span>${t}</span>`;
+  l.innerHTML=`<input type="checkbox"><span></span>`;
+  l.querySelector('span').textContent=t;
   l.querySelector('input').onchange=e=>{l.style.opacity=e.target.checked?.5:1;};
   cw.appendChild(l);});
 
-load();
+/* ---------------- 立ち上げ ---------------- */
+(async function boot(){
+  db=await openDB();
+  let d=await dbGet('state','current');
+  if(!d){try{const raw=localStorage.getItem('yonkoma');if(raw)d={S:JSON.parse(raw)};}catch(e){}}
+  if(d&&d.S){
+    S={...S,...d.S};
+    if(!Array.isArray(S.notes)||S.notes.length<3)S.notes=['','',''];
+    if(!Array.isArray(S.koma)||S.koma.length!==4)S.koma=[0,1,2,3].map(blank);
+    S.koma=S.koma.map(k=>({art:k.art||'',lines:[(k.lines||[])[0]||'',(k.lines||[])[1]||''],
+      shot:k.shot||'バストアップ',face:k.face||'基本'}));
+    $('#issue').value=S.issue||'';$('#month').value=S.month||'';$('#theme').value=S.theme||'';
+    $('#n1').value=S.notes[0]||'';$('#n2').value=S.notes[1]||'';$('#n3').value=S.notes[2]||'';
+    if(Array.isArray(d.V)){V=d.V.map(l=>Array.isArray(l)?l:[]);}
+    if(Array.isArray(d.SEL))SEL=d.SEL.map(x=>typeof x==='number'?x:-1);
+    if(typeof d.seq==='number')seq=d.seq;
+    for(let i=0;i<4;i++){if(SEL[i]>=V[i].length)SEL[i]=V[i].length-1;await loadImg(i);}
+    if(S.koma.some(k=>k.art||k.lines.some(Boolean))){show();drawEd();}
+  }
+  renderSheet();
+  await renderWorks();
+})();
 </script>
 </body>
 </html>
