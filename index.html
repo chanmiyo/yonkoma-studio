@@ -103,7 +103,12 @@ select option{background:#2E2822;}
     <label class="fl">テーマ・出来事</label>
     <textarea id="theme" rows="3" placeholder="例：うしくりーん作戦で集合写真を撮ろうとドローンを用意したら、直前にアップデートが始まってiPhoneで撮った"></textarea>
     <div class="row" style="margin-top:14px">
-      <button class="btn go" id="gen">ネームを作る</button>
+      <button class="btn go" id="all" style="font-size:16px;padding:15px 26px">
+        一気に版下まで作る</button>
+    </div>
+    <div id="allState" style="font-size:13px;color:#CFE9F2;margin-top:10px;min-height:20px"></div>
+    <div class="row" style="margin-top:10px">
+      <button class="btn ghost sm" id="gen">ネームだけ作る</button>
       <button class="btn ghost sm" id="blank">白紙から書く</button>
     </div>
     <div id="genErr" class="err hide"></div>
@@ -275,7 +280,7 @@ $('#theme').oninput=e=>{S.theme=e.target.value;save();};
 ['n1','n2','n3'].forEach((id,i)=>$('#'+id).oninput=e=>{S.notes[i]=e.target.value;render();save();});
 $('#blank').onclick=()=>{show();drawEd();render();};
 
-$('#gen').onclick=async()=>{
+async function genName(){
   const th=$('#theme').value.trim(),err=$('#genErr');err.classList.add('hide');
   if(!th){err.textContent='テーマを入れてください。';err.classList.remove('hide');return;}
   const b=$('#gen');b.disabled=true;b.innerHTML='<span class="spin"></span>考えています';
@@ -294,9 +299,11 @@ $('#gen').onclick=async()=>{
     imgs=[null,null,null,null];
     show();drawEd();render();save();
     $('#komaCard').scrollIntoView({behavior:'smooth',block:'start'});
+    b.disabled=false;b.textContent='ネームを作る';return true;
   }catch(e){err.textContent=e.message;err.classList.remove('hide');}
-  b.disabled=false;b.textContent='ネームを作る';
-};
+  b.disabled=false;b.textContent='ネームを作る';return false;
+}
+$('#gen').onclick=genName;
 
 function shrink(im){
   const w=768,h=Math.round(im.height*w/im.width);
@@ -330,13 +337,36 @@ async function drawOne(i){
   }catch(e){st.textContent='';err.textContent=`${i+1}コマ目：`+e.message;err.classList.remove('hide');}
 }
 
+$('#all').onclick=async()=>{
+  const b=$('#all'),st=$('#allState');
+  b.disabled=true;$('#gen').disabled=true;
+  const step=t=>{st.innerHTML='<span class="spin"></span>'+t;};
+  try{
+    step('ネームを考えています…（1/6）');
+    const ok=await genName();
+    if(!ok){st.textContent='';b.disabled=false;$('#gen').disabled=false;return;}
+    for(let i=0;i<4;i++){
+      step(`${i+1}コマ目を描いています…（${i+2}/6）　残り約${(4-i)}分`);
+      await drawOne(i);
+      if(!imgs[i]){st.innerHTML='<span style="color:#F6C8C2">'+
+        `${i+1}コマ目でつまずきました。そのコマの「このコマを描く」を押してください。</span>`;
+        b.disabled=false;$('#gen').disabled=false;return;}
+    }
+    step('版下に組んでいます…（6/6）');
+    await new Promise(r=>setTimeout(r,300));
+    exportPng();
+    st.innerHTML='<span style="color:#90C020">できました。版下をダウンロードしました。</span>';
+  }catch(e){st.innerHTML='<span style="color:#F6C8C2">'+e.message+'</span>';}
+  b.disabled=false;$('#gen').disabled=false;
+};
+
 $('#drawAll').onclick=async()=>{
   const b=$('#drawAll');b.disabled=true;
   for(let i=0;i<4;i++){$('#drawState').textContent=`${i+1}コマ目を描いています…`;await drawOne(i);}
   $('#drawState').textContent='';b.disabled=false;
 };
 
-$('#dl').onclick=()=>{
+function exportPng(){
   const k=$('#x2').checked?2:1;
   const c=document.createElement('canvas');c.width=W*k;c.height=TH*k;
   const x=c.getContext('2d');x.imageSmoothingQuality='high';
@@ -359,7 +389,8 @@ $('#dl').onclick=()=>{
   c.toBlob(b=>{const a=document.createElement('a');a.href=URL.createObjectURL(b);
     a.download=(S.issue?S.issue.replace(/[\/\\:*?"<>|\s]/g,'_'):'fumufumu')+'_4koma.png';
     a.click();setTimeout(()=>URL.revokeObjectURL(a.href),4000);},'image/png');
-};
+}
+$('#dl').onclick=exportPng;
 
 const cw=$('#checks');
 CHECKS.forEach(t=>{const l=document.createElement('label');l.className='chk';
