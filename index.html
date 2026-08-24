@@ -113,6 +113,8 @@ select option{background:#2E2822;}
     <h2>ネームを直して、絵にする</h2>
     <p class="lede">セリフは1コマ2つまで、1つ20文字以内。絵の欄に看板や画面の文字を書くと化けるので書かないでください。</p>
     <div id="komaEd"></div>
+    <label class="chk" style="border:0;margin-bottom:6px"><input type="checkbox" id="chain" checked>
+      前のコマに合わせて描く（服・小道具・背景を引き継ぐ）</label>
     <div class="row">
       <button class="btn" id="drawAll">4コマまとめて描く</button>
       <span id="drawState" style="font-size:12px;color:var(--muted)"></span>
@@ -251,6 +253,22 @@ function count(){$$('[data-c]').forEach(el=>{const [i,j]=el.dataset.c.split('-')
   const n=(S.koma[i].lines[j]||'').length;el.textContent=n?`${n} / 20`:'';
   el.classList.toggle('over',n>20);});}
 
+function parseKoma(t){
+  const m=t.match(/\[[\s\S]*\]/); const src=m?m[0]:t;
+  try{const a=JSON.parse(src);if(Array.isArray(a))return a;}catch(e){}
+  try{const a=JSON.parse(src.replace(/,\s*([\]}])/g,'$1'));if(Array.isArray(a))return a;}catch(e){}
+  const out=[];
+  src.split(/\}\s*,\s*\{/).forEach(b=>{
+    const am=b.match(/"art"\s*:\s*"((?:[^"\\]|\\.)*)"/);
+    if(!am)return;
+    const lb=(b.match(/"lines"\s*:\s*\[([\s\S]*?)\]/)||[])[1]||'';
+    const lines=[]; const re=/"((?:[^"\\]|\\.)*)"/g; let x;
+    while((x=re.exec(lb))!==null)lines.push(x[1].replace(/\\"/g,'"'));
+    out.push({art:am[1].replace(/\\"/g,'"'),lines:[lines[0]||'',lines[1]||'']});
+  });
+  return out;
+}
+
 $('#issue').oninput=e=>{S.issue=e.target.value;render();save();};
 $('#month').oninput=e=>{S.month=e.target.value;save();};
 $('#theme').oninput=e=>{S.theme=e.target.value;save();};
@@ -268,9 +286,8 @@ $('#gen').onclick=async()=>{
     let t=(await r.text()).trim();
     if(t==='Accepted')throw new Error('Makeが「Accepted」を返しました。もう一度押してください。');
     t=t.replace(/```json/g,'').replace(/```/g,'').trim();
-    const m=t.match(/\[[\s\S]*\]/);if(m)t=m[0];
-    const arr=JSON.parse(t);
-    if(!Array.isArray(arr)||arr.length!==4)throw new Error('4コマ分の形になりませんでした');
+    const arr=parseKoma(t);
+    if(!Array.isArray(arr)||arr.length!==4)throw new Error('4コマ分の形になりませんでした。もう一度押してください。');
     S.koma=arr.map((k,i)=>({art:String(k.art||''),
       lines:[String((k.lines||[])[0]||''),String((k.lines||[])[1]||'')],
       shot:S.koma[i].shot||'バストアップ',face:S.koma[i].face||'基本'}));
@@ -281,15 +298,29 @@ $('#gen').onclick=async()=>{
   b.disabled=false;b.textContent='ネームを作る';
 };
 
+function shrink(im){
+  const w=768,h=Math.round(im.height*w/im.width);
+  const c=document.createElement('canvas');c.width=w;c.height=h;
+  const x=c.getContext('2d');x.fillStyle='#fff';x.fillRect(0,0,w,h);
+  x.drawImage(im,0,0,w,h);
+  return c.toDataURL('image/jpeg',.85).split(',')[1];
+}
+function prevImage(i){
+  for(let j=i-1;j>=0;j--) if(imgs[j]) return imgs[j];
+  return null;
+}
 async function drawOne(i){
   const k=S.koma[i],st=$(`[data-ks="${i}"]`),err=$('#drawErr');err.classList.add('hide');
   if(!k.art){err.textContent=`${i+1}コマ目の「絵」が空です。`;err.classList.remove('hide');return;}
-  st.innerHTML='<span class="spin"></span>描いています（1分ほど）';
+  const pv=$('#chain').checked?prevImage(i):null;
+  st.innerHTML='<span class="spin"></span>'+(pv?'前のコマに合わせて描いています':'描いています')+'（1分ほど）';
   try{
-    const p=new URLSearchParams({mode:'image',shot:k.shot||'バストアップ',
+    const body={mode:'image',shot:k.shot||'バストアップ',
       face:(k.face||'基本')+'　'+(FACE_RULE[k.face||'基本']||''),
-      art:k.art,lines:k.lines.filter(Boolean).map(l=>'「'+l+'」').join('　')||'なし'});
-    const r=await fetch(HOOK+'?'+p.toString());
+      art:k.art,lines:k.lines.filter(Boolean).map(l=>'「'+l+'」').join('　')||'なし'};
+    if(pv) body.prev=shrink(pv);
+    const r=await fetch(HOOK,{method:'POST',
+      headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
     if(!r.ok)throw new Error('通信に失敗しました（'+r.status+'）');
     const bl=await r.blob();
     if(bl.type.indexOf('image')<0)throw new Error('画像が返りませんでした。もう一度押してください。');
