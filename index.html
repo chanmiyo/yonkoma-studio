@@ -146,7 +146,7 @@ details.auto .inner select{margin-bottom:10px;background:#fff;}
 
 <div class="hdr">
   <h1>四コマスタジオ</h1>
-  <div class="sub">ふむふむ瓦版　820 × 2538px　<span style="color:#A1A1AA">｜　2026-08-25c版（注釈を大きく）</span></div>
+  <div class="sub">ふむふむ瓦版　820 × 2538px　<span style="color:#A1A1AA">｜　2026-08-25f版（表情の実物見本を参照）</span></div>
 </div>
 
 <div class="wrap">
@@ -261,16 +261,19 @@ const KANJI=['起','承','転','結'];
 const SHOTS=['バストアップ','顔のアップ','全身（立ち）','全身（ばんざい）','全身（後ろ姿）'];
 const FACES=['基本','笑顔（目を閉じる）','感激・大好き','お願い・上目づかい',
  'じと目・不機嫌','あわてる','メガネ（作業中）','イライラ・怒り'];
+const FACE_KEY={'基本':'kihon','笑顔（目を閉じる）':'egao','感激・大好き':'kangeki',
+'お願い・上目づかい':'onegai','じと目・不機嫌':'jitome','あわてる':'awateru',
+'メガネ（作業中）':'megane','イライラ・怒り':'iraira'};
 const FACE_RULE={
-'基本':'小さい黒目をひとつ、向かって右。まつげなし',
+'基本':'小さな茶色の目が左右に1つずつ、それぞれに短いまつげの線が1本。元データと同じ',
 '笑顔（目を閉じる）':'目は弧を1本ずつ。うれしい・元気な顔',
 '感激・大好き':'両目とも大きな青い瞳、まつげあり。クローバーは中央寄りへ',
 'お願い・上目づかい':'片目だけ大きな青い瞳、まつげあり。もう片方はクローバー',
-'じと目・不機嫌':'まぶたの水平線で半目。黒目は小さいまま',
-'あわてる':'黒目は小さいまま、まつげとハイライトは付けない。汗を足し、口は大きく開ける',
-'メガネ（作業中）':'丸メガネをクローバーの上に。黒目はメガネ越しに小さく',
+'じと目・不機嫌':'まぶたの水平線で半目。茶色の目は小さいまま',
+'あわてる':'茶色の目は小さいまま、まつげは1本ずつのまま増やさない。汗を足し、口は大きく開ける',
+'メガネ（作業中）':'丸メガネをクローバーの上に。茶色の目はメガネ越しに小さく',
 'イライラ・怒り':'じと目を土台に、つり眉を向かって右に1本、口をへの字、こめかみに青い怒りマークを1つ'};
-const CHECKS=['クローバーが顔の中央、小さな目が左右に1つずつある','指定した表情になっている',
+const CHECKS=['クローバーが顔の中央、茶色の小さな目が左右に1つずつ・まつげが1本ずつある','指定した表情になっている',
 '口がクローバーより下にある','髪が茶色のきのこ型。ピンクや長髪でない',
 '白猫が向かって右上、緑の花が向かって左上','ほっぺのハートが左右にある',
 '1.6〜1.7頭身。首が生えていない','指が描かれていない','影やグラデーションがない',
@@ -485,17 +488,32 @@ function attachDrag(shot,i,v){
   shot.appendChild(hint);
   normBub(v);
   let rects=[null,null],drag=-1;
+  const off=document.createElement('canvas');
+  let cut=0;
   const size=()=>{const r=shot.getBoundingClientRect();
     const k=window.devicePixelRatio||1;
     c.width=Math.round(r.width*k);c.height=Math.round(r.height*k);};
-  const paint=()=>{rects=paintBaked(c.getContext('2d'),v._rawim,i,v.bub,c.width,c.height);};
+  // プレビューは版下と同じ4:3の切り抜きで表示する（見たまま＝仕上がり）
+  const paint=()=>{
+    const im=v._rawim;if(!im)return;
+    off.width=im.width;off.height=im.height;
+    const target=im.height*(820/600);
+    cut=im.width>target?(im.width-target)/2:0;
+    rects=paintBaked(off.getContext('2d'),im,i,v.bub,off.width,off.height);
+    const x=c.getContext('2d');
+    x.clearRect(0,0,c.width,c.height);
+    x.drawImage(off,cut,0,off.width-cut*2,off.height,0,0,c.width,c.height);
+  };
   rawImage(v).then(()=>{size();paint();});
   const pos=e=>{const r=c.getBoundingClientRect();
-    return {x:(e.clientX-r.left)/r.width,y:(e.clientY-r.top)/r.height};};
+    const px=(e.clientX-r.left)/r.width,py=(e.clientY-r.top)/r.height;
+    // 表示（切り抜き後）の座標 → 元絵（切り抜き前）の座標へ
+    return {x:(cut+px*(off.width-cut*2))/off.width,y:py};};
   c.onpointerdown=e=>{
-    const p=pos(e),X=p.x*c.width,Y=p.y*c.height;
+    const p=pos(e),X=p.x*off.width,Y=p.y*off.height;
+    const pad=off.height*0.02;
     drag=-1;
-    rects.forEach((rc,j)=>{if(rc&&X>=rc.bx-8&&X<=rc.bx+rc.bw+8&&Y>=rc.by-8&&Y<=rc.by+rc.bh+8)drag=j;});
+    rects.forEach((rc,j)=>{if(rc&&X>=rc.bx-pad&&X<=rc.bx+rc.bw+pad&&Y>=rc.by-pad&&Y<=rc.by+rc.bh+pad)drag=j;});
     if(drag<0)return;
     c.setPointerCapture(e.pointerId);c.style.cursor='grabbing';e.preventDefault();
   };
@@ -758,7 +776,10 @@ function drawBubble(x,text,b,W,H){
   const bw=tw+padX*2,bh=rows.length*lh+padY*2;
   let bx=b.x*W-bw/2, by=b.y*H-bh/2;
   const m=Math.round(H*0.02);
-  bx=Math.max(m,Math.min(W-bw-m,bx)); by=Math.max(m,Math.min(H-bh-m,by));
+  // 版下では左右を切って4:3にするため、切られない範囲に必ず収める
+  const target=H*(820/600), cut=W>target?(W-target)/2:0;
+  bx=Math.max(cut+m,Math.min(W-cut-bw-m,bx));
+  by=Math.max(m,Math.min(H-bh-m,by));
   const r=Math.min(bh/2,F*1.15);
   const lw=Math.max(3,Math.round(F*0.11));
   // 本体
@@ -867,6 +888,7 @@ async function callImage(i,noText){
   const k=S.koma[i];
   const pv=$('#chain').checked?await prevPic(i,noText):null;
   const body={mode:'image',shot:k.shot||'バストアップ',
+    faceKey:FACE_KEY[k.face||'基本']||'kihon',
     face:(k.face||'基本')+'　'+(FACE_RULE[k.face||'基本']||''),
     art:noText?NOTEXT_PREFIX+k.art+NOTEXT_SUFFIX:k.art,
     lines:noText?'なし。吹き出しそのものを描かない':
