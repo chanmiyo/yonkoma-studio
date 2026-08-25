@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>四コマスタジオ</title>
-<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;600;700&family=Zen+Maru+Gothic:wght@700;900&family=Yusei+Magic&display=swap" rel="stylesheet">
 <style>
 :root{--bg:#F7F7F8;--card:#FFFFFF;--line:#E4E4E7;--ink:#18181B;--sub:#71717A;
 --accent:#2563EB;--accent-w:#DBEAFE;--ok:#16A34A;--ok-w:#DCFCE7;--warn:#B45309;--warn-w:#FEF3C7;
@@ -71,6 +71,13 @@ input:focus,textarea:focus,select:focus{outline:0;border-color:var(--accent);
 .vthumb .x{position:absolute;right:1px;top:0px;background:rgba(0,0,0,.55);color:#fff;
  font-size:10px;line-height:1.4;padding:0 4px;border-radius:4px;cursor:pointer;}
 .vinfo{font-size:11.5px;color:var(--sub);margin:2px 0 8px;}
+.bubctl{background:#F4F4F5;border-radius:8px;padding:8px 11px;margin-top:8px;font-size:12.5px;color:var(--ink);}
+.bubctl .bl{display:flex;align-items:center;gap:7px;flex-wrap:wrap;padding:3px 0;}
+.bubctl .bl b{font-weight:600;min-width:52px;}
+.bubctl button{background:#fff;border:1px solid var(--line);border-radius:6px;
+ width:28px;height:26px;font-size:14px;line-height:1;padding:0;}
+.bubctl button:disabled{opacity:.35;}
+.bubctl select{width:auto;padding:3px 8px;font-size:12.5px;margin:0;}
 .warnbox{background:var(--warn-w);border:1px solid #FDE68A;border-radius:8px;padding:10px 12px;
  font-size:12.5px;color:#78350F;margin-top:10px;display:flex;gap:8px;align-items:center;flex-wrap:wrap;}
 .kstat{font-size:12.5px;color:var(--sub);min-height:18px;margin-top:8px;}
@@ -81,7 +88,7 @@ details.auto>summary::-webkit-details-marker{display:none;}
 details.auto>summary::before{content:'▸';color:var(--sub);font-size:11px;}
 details.auto[open]>summary::before{content:'▾';}
 details.auto>summary b{font-weight:600;}
-details.auto>summary .memo{color:var(--sub);font-size:12px;font-weight:400;}
+details.auto>summary .memo{color:var(--sub);font-size:12px;font-weight:400;margin-left:8px;}
 details.auto .inner{padding:0 13px 13px;}
 details.auto .inner select{margin-bottom:10px;background:#fff;}
 .cnt{font-size:12px;color:var(--sub);text-align:right;margin:-8px 0 12px;}
@@ -182,6 +189,21 @@ details.auto .inner select{margin-bottom:10px;background:#fff;}
     <div id="komaEd"></div>
     <label class="chk" style="border:0;margin-bottom:6px"><input type="checkbox" id="chain" checked>
       前のコマに合わせて描く（服・小道具・背景を引き継ぐ）</label>
+    <div class="row" style="margin-bottom:10px">
+      <span style="font-size:13px">セリフの入れ方</span>
+      <select id="smode" style="width:auto;padding:6px 10px;font-size:13px;margin:0">
+        <option value="bake">後入れ（文字化けしない・おすすめ）</option>
+        <option value="ai">AIに直接描かせる（従来）</option>
+      </select>
+    </div>
+    <div class="row" style="margin-bottom:10px">
+      <span style="font-size:13px">後入れセリフの書体</span>
+      <select id="bfont" style="width:auto;padding:6px 10px;font-size:13px;margin:0">
+        <option value="Zen Maru Gothic">丸ゴシック（AIの絵に近い）</option>
+        <option value="Yusei Magic">手書き風</option>
+        <option value="Noto Sans JP">角ゴシック</option>
+      </select>
+    </div>
     <div class="row">
       <button class="btn" id="drawAll">4コマまとめて描く</button>
       <span id="drawState" style="font-size:12.5px;color:var(--sub)"></span>
@@ -292,7 +314,8 @@ function save(){
     if(!db)return;
     const V2=V.map(list=>list.map(v=>({id:v.id,ts:v.ts,blob:v.blob,shot:v.shot,
       face:v.face,art:v.art,lines:v.lines,prevId:v.prevId,
-      raw:v.raw||null,bub:v.bub?[{x:v.bub[0].x,y:v.bub[0].y},{x:v.bub[1].x,y:v.bub[1].y}]:null})));
+      raw:v.raw||null,
+      bub:v.bub?v.bub.map(b=>({x:b.x,y:b.y,s:b.s||1,t:b.t||'auto'})):null})));
     try{await dbPut('state',{id:'current',S,V:V2,SEL,seq});
       $('#saveState').textContent='保存しました';
       setTimeout(()=>{if($('#saveState').textContent==='保存しました')$('#saveState').textContent='　';},1400);
@@ -309,6 +332,8 @@ function sameLines(a,b){return (a[0]||'')===(b[0]||'')&&(a[1]||'')===(b[1]||'');
 function staleReason(i){
   const v=cur(i);if(!v)return null;
   const k=S.koma[i];
+  if(v.raw&&v.art===k.art&&v.shot===k.shot&&v.face===k.face&&!sameLines(v.lines,k.lines))
+    return 'セリフが変わっています。「セリフだけ入れ直す（無料）」で反映できます';
   if(v.art!==k.art||!sameLines(v.lines,k.lines)||v.shot!==k.shot||v.face!==k.face)
     return '書いた内容が変わっています';
   if($('#chain').checked&&i>0&&(v.prevId||null)!==prevId(i))
@@ -374,6 +399,7 @@ function komaHTML(i){
         <button class="btn ghost sm" data-notext="${i}" title="絵は文字なしで描かせて、セリフはアプリが本物の文字で入れます。文字化けしません。吹き出しはあとからドラッグで動かせます">文字化けする？　セリフ後入れで描く</button>
         <button class="btn ghost sm hide" data-relabel="${i}" title="絵はそのまま、直したセリフを入れ直します。無料・数秒">セリフだけ入れ直す（無料）</button>
       </div>
+      <div class="bubctl hide" data-bubctl="${i}"></div>
       <div class="kstat" data-ks="${i}"></div>
       <div class="warnbox hide" data-warn="${i}">
         <span data-warntxt="${i}"></span>
@@ -411,7 +437,14 @@ function drawEd(){
     d.querySelector('[data-f="0"]').value=k.lines[0]||'';
     d.querySelector('[data-f="1"]').value=k.lines[1]||'';
   });
-  const upd=e=>{const t=e.target,i=+t.dataset.k,f=t.dataset.f;if(f===undefined)return;
+  const upd=e=>{const t=e.target;
+    if(t.dataset.bt!==undefined){
+      const [i2,j]=t.dataset.bt.split('-').map(Number);
+      const v2=cur(i2);if(!v2||!v2.raw||BUSY.some(Boolean))return;
+      normBub(v2);v2.bub[j].t=t.value;
+      bakeVersion(i2,v2).then(()=>{refreshAll();save();});
+      return;}
+    const i=+t.dataset.k,f=t.dataset.f;if(f===undefined)return;
     if(f==='art')S.koma[i].art=t.value;
     else if(f==='shot')S.koma[i].shot=t.value;
     else if(f==='face')S.koma[i].face=t.value;
@@ -426,6 +459,14 @@ function drawEd(){
     b=t.closest('[data-chain]');              if(b){redrawFrom(+b.dataset.chain);return;}
     b=t.closest('[data-notext]');             if(b){drawOne(+b.dataset.notext,false,true);return;}
     b=t.closest('[data-relabel]');            if(b){relabel(+b.dataset.relabel);return;}
+    b=t.closest('[data-bs]');                 if(b){
+      const [i2,j]=b.dataset.bs.split('-').map(Number);
+      const v2=cur(i2);if(!v2||!v2.raw||BUSY.some(Boolean))return;
+      normBub(v2);
+      v2.bub[j].s=Math.round(Math.max(0.7,Math.min(1.6,
+        v2.bub[j].s+(b.dataset.op==='+'?0.1:-0.1)))*10)/10;
+      bakeVersion(i2,v2).then(()=>{refreshAll();save();});
+      return;}
     b=t.closest('[data-vx]');                 if(b){const[i,j]=b.dataset.vx.split('-').map(Number);delVersion(i,j);return;}
     b=t.closest('[data-vsel]');               if(b){const[i,j]=b.dataset.vsel.split('-').map(Number);pick(i,j);return;}
   };
@@ -442,7 +483,7 @@ function attachDrag(shot,i,v){
     'font-size:10.5px;line-height:1.6;padding:1px 7px;border-radius:5px;pointer-events:none;';
   hint.textContent='吹き出しはドラッグで動かせます';
   shot.appendChild(hint);
-  if(!v.bub)v.bub=BUB_DEF();
+  normBub(v);
   let rects=[null,null],drag=-1;
   const size=()=>{const r=shot.getBoundingClientRect();
     const k=window.devicePixelRatio||1;
@@ -461,7 +502,8 @@ function attachDrag(shot,i,v){
   c.onpointermove=e=>{
     if(drag<0)return;
     const p=pos(e);
-    v.bub[drag]={x:Math.max(0,Math.min(1,p.x)),y:Math.max(0,Math.min(1,p.y))};
+    v.bub[drag].x=Math.max(0,Math.min(1,p.x));
+    v.bub[drag].y=Math.max(0,Math.min(1,p.y));
     paint();
   };
   c.onpointerup=c.onpointercancel=async e=>{
@@ -488,8 +530,32 @@ function refresh(i){
     p.textContent='「このコマを描く」を押すと、ここに絵が出ます';shot.appendChild(p);}
   if(BUSY[i]){const b=document.createElement('div');b.className='busy';
     b.innerHTML='<span class="spin"></span>描いています';shot.appendChild(b);}
+  const nt=box.querySelector(`[data-notext="${i}"]`);
+  if(nt)nt.classList.toggle('hide',bakeMode());
   const rl=box.querySelector(`[data-relabel="${i}"]`);
   if(rl)rl.classList.toggle('hide',!(v&&v.raw));
+  const bc=box.querySelector(`[data-bubctl="${i}"]`);
+  if(bc){
+    if(v&&v.raw){
+      normBub(v);
+      bc.classList.remove('hide');
+      const L=S.koma[i].lines||[];
+      bc.innerHTML=[0,1].filter(j=>(L[j]||'').trim()).map(j=>{
+        const b=v.bub[j];
+        return `<div class="bl"><b>セリフ${j+1}</b>
+          文字 <button data-bs="${i}-${j}" data-op="-" ${b.s<=0.7?'disabled':''}>−</button>
+          <button data-bs="${i}-${j}" data-op="+" ${b.s>=1.6?'disabled':''}>＋</button>
+          しっぽ <select data-bt="${i}-${j}">
+            <option value="auto"${b.t==='auto'?' selected':''}>自動</option>
+            <option value="down"${b.t==='down'?' selected':''}>下</option>
+            <option value="up"${b.t==='up'?' selected':''}>上</option>
+            <option value="left"${b.t==='left'?' selected':''}>左</option>
+            <option value="right"${b.t==='right'?' selected':''}>右</option>
+            <option value="none"${b.t==='none'?' selected':''}>なし</option>
+          </select></div>`;}).join('')||
+        '<div class="bl">セリフが空です</div>';
+    }else{bc.classList.add('hide');bc.innerHTML='';}
+  }
 
   const strip=box.querySelector(`[data-strip="${i}"]`);
   strip.innerHTML='';
@@ -675,45 +741,61 @@ function loadBlobImage(bl){
 }
 function wrapJa(t,per){const o=[];for(let i=0;i<t.length;i+=per)o.push(t.slice(i,i+per));return o.slice(0,3);}
 
-const BUB_DEF=()=>[{x:0.28,y:0.17},{x:0.72,y:0.83}];
+const BUB_DEF=()=>[{x:0.28,y:0.17,s:1,t:'auto'},{x:0.72,y:0.83,s:1,t:'auto'}];
+const FONT_W={'Zen Maru Gothic':'900','Yusei Magic':'400','Noto Sans JP':'700'};
+function bfam(){return S.bfont||'Zen Maru Gothic';}
+function bfont(F){const f=bfam();return (FONT_W[f]||'700')+' '+F+'px "'+f+'","Noto Sans JP",sans-serif';}
 
-/* 吹き出しを1つ描く。中心座標(cx,cy)は 0〜1 の割合。描いた範囲を返す（ドラッグ判定用） */
-function drawBubble(x,text,cx,cy,W,H){
-  const F=Math.round(H*0.046);
+/* 吹き出しを1つ描く。b={x,y,s(文字倍率),t(しっぽ auto/down/up/left/right/none)}
+   描いた範囲を返す（ドラッグ判定用） */
+function drawBubble(x,text,b,W,H){
+  const F=Math.round(H*0.046*(b.s||1));
   const per=text.length<=11?text.length:Math.ceil(text.length/2);
   const rows=wrapJa(text,per);
-  x.font='700 '+F+'px "Noto Sans JP",sans-serif';
+  x.font=bfont(F);
   const tw=Math.max(...rows.map(r=>x.measureText(r).width));
   const padX=F*0.75,padY=F*0.5,lh=F*1.34;
   const bw=tw+padX*2,bh=rows.length*lh+padY*2;
-  let bx=cx*W-bw/2, by=cy*H-bh/2;
+  let bx=b.x*W-bw/2, by=b.y*H-bh/2;
   const m=Math.round(H*0.02);
   bx=Math.max(m,Math.min(W-bw-m,bx)); by=Math.max(m,Math.min(H-bh-m,by));
   const r=Math.min(bh/2,F*1.15);
-  const tailH=F*0.85,tw2=F*0.42;
-  const down=cy<0.5;                 // 上半分にあればしっぽは下向き
-  const tx=Math.max(bx+r+tw2,Math.min(bx+bw-r-tw2,bx+bw*(down?0.65:0.35)));
+  const lw=Math.max(3,Math.round(F*0.11));
+  // 本体
   x.beginPath();
-  if(down){
-    x.moveTo(bx+r,by);
-    x.lineTo(bx+bw-r,by);x.quadraticCurveTo(bx+bw,by,bx+bw,by+r);
-    x.lineTo(bx+bw,by+bh-r);x.quadraticCurveTo(bx+bw,by+bh,bx+bw-r,by+bh);
-    x.lineTo(tx+tw2,by+bh);x.lineTo(tx-tw2*0.2,by+bh+tailH);x.lineTo(tx-tw2,by+bh);
-    x.lineTo(bx+r,by+bh);x.quadraticCurveTo(bx,by+bh,bx,by+bh-r);
-    x.lineTo(bx,by+r);x.quadraticCurveTo(bx,by,bx+r,by);
-  }else{
-    x.moveTo(bx+r,by);
-    x.lineTo(tx-tw2,by);x.lineTo(tx+tw2*0.2,by-tailH);x.lineTo(tx+tw2,by);
-    x.lineTo(bx+bw-r,by);x.quadraticCurveTo(bx+bw,by,bx+bw,by+r);
-    x.lineTo(bx+bw,by+bh-r);x.quadraticCurveTo(bx+bw,by+bh,bx+bw-r,by+bh);
-    x.lineTo(bx+r,by+bh);x.quadraticCurveTo(bx,by+bh,bx,by+bh-r);
-    x.lineTo(bx,by+r);x.quadraticCurveTo(bx,by,bx+r,by);
-  }
+  x.moveTo(bx+r,by);
+  x.lineTo(bx+bw-r,by);x.quadraticCurveTo(bx+bw,by,bx+bw,by+r);
+  x.lineTo(bx+bw,by+bh-r);x.quadraticCurveTo(bx+bw,by+bh,bx+bw-r,by+bh);
+  x.lineTo(bx+r,by+bh);x.quadraticCurveTo(bx,by+bh,bx,by+bh-r);
+  x.lineTo(bx,by+r);x.quadraticCurveTo(bx,by,bx+r,by);
   x.closePath();
   x.fillStyle='#fff';x.fill();
-  x.lineWidth=Math.max(3,Math.round(F*0.11));x.strokeStyle='#000';
-  x.lineJoin='round';x.stroke();
+  x.lineWidth=lw;x.strokeStyle='#000';x.lineJoin='round';x.stroke();
+  // しっぽ（本体の上にかぶせて描く）
+  let t=b.t||'auto';
+  if(t==='auto')t=(b.y<0.5)?'down':'up';
+  if(t!=='none'){
+    const tl=F*0.9,hw=F*0.42,inset=lw*1.6;
+    let p1,p2,tip;
+    if(t==='down'){const tx=Math.max(bx+r,Math.min(bx+bw-r,bx+bw*0.65));
+      p1=[tx-hw,by+bh-inset];p2=[tx+hw,by+bh-inset];tip=[tx-hw*0.3,by+bh+tl];}
+    else if(t==='up'){const tx=Math.max(bx+r,Math.min(bx+bw-r,bx+bw*0.35));
+      p1=[tx-hw,by+inset];p2=[tx+hw,by+inset];tip=[tx+hw*0.3,by-tl];}
+    else if(t==='left'){const ty=Math.max(by+r*0.7,Math.min(by+bh-r*0.7,by+bh*0.6));
+      p1=[bx+inset,ty-hw];p2=[bx+inset,ty+hw];tip=[bx-tl,ty+hw*0.3];}
+    else{const ty=Math.max(by+r*0.7,Math.min(by+bh-r*0.7,by+bh*0.6));
+      p1=[bx+bw-inset,ty-hw];p2=[bx+bw-inset,ty+hw];tip=[bx+bw+tl,ty+hw*0.3];}
+    x.beginPath();x.moveTo(p1[0],p1[1]);x.lineTo(tip[0],tip[1]);x.lineTo(p2[0],p2[1]);
+    x.closePath();x.fillStyle='#fff';x.fill();
+    x.beginPath();x.moveTo(p1[0],p1[1]);x.lineTo(tip[0],tip[1]);x.lineTo(p2[0],p2[1]);
+    x.lineWidth=lw;x.lineJoin='round';x.lineCap='round';x.stroke();
+    // しっぽの根元にかかった本体の線を白で消す
+    x.beginPath();x.moveTo(p1[0],p1[1]);x.lineTo(p2[0],p2[1]);
+    x.lineWidth=lw*2.4;x.strokeStyle='#fff';x.stroke();
+    x.strokeStyle='#000';
+  }
   x.fillStyle='#000';x.textAlign='center';x.textBaseline='top';
+  x.font=bfont(F);
   rows.forEach((s,n)=>x.fillText(s,bx+bw/2,by+padY+n*lh+(lh-F)/2));
   return {bx,by,bw,bh};
 }
@@ -721,18 +803,29 @@ function rawImage(v){
   if(v._rawim)return Promise.resolve(v._rawim);
   return loadBlobImage(v.raw).then(im=>{v._rawim=im;return im;});
 }
+function normBub(v){
+  const d=BUB_DEF();
+  if(!Array.isArray(v.bub))v.bub=d;
+  v.bub=[0,1].map(j=>{const b=v.bub[j]||{};
+    return {x:typeof b.x==='number'?b.x:d[j].x,
+            y:typeof b.y==='number'?b.y:d[j].y,
+            s:typeof b.s==='number'?b.s:1,
+            t:b.t||'auto'};});
+  return v.bub;
+}
 function paintBaked(x,im,i,bub,W,H){
   x.clearRect(0,0,W,H);
   x.drawImage(im,0,0,W,H);
   const L=(S.koma[i].lines||[]);
   const rects=[null,null];
-  if((L[0]||'').trim())rects[0]=drawBubble(x,L[0].trim(),bub[0].x,bub[0].y,W,H);
-  if((L[1]||'').trim())rects[1]=drawBubble(x,L[1].trim(),bub[1].x,bub[1].y,W,H);
+  if((L[0]||'').trim())rects[0]=drawBubble(x,L[0].trim(),bub[0],W,H);
+  if((L[1]||'').trim())rects[1]=drawBubble(x,L[1].trim(),bub[1],W,H);
   return rects;
 }
 /* 文字なしの元絵＋いまのセリフ＋いまの吹き出し位置から、完成画像を作り直す */
 async function bakeVersion(i,v){
-  try{await document.fonts.load('700 47px "Noto Sans JP"');await document.fonts.ready;}catch(e){}
+  normBub(v);
+  try{await document.fonts.load(bfont(47),'あ牛');await document.fonts.ready;}catch(e){}
   const im=await rawImage(v);
   const c=document.createElement('canvas');c.width=im.width;c.height=im.height;
   paintBaked(c.getContext('2d'),im,i,v.bub||BUB_DEF(),c.width,c.height);
@@ -760,9 +853,19 @@ function shrink(im){
   x.drawImage(im,0,0,w,h);
   return c.toDataURL('image/jpeg',.85).split(',')[1];
 }
+function bakeMode(){return (S.smode||'bake')!=='ai';}
+/* 前のコマの絵。後入れモードでは、吹き出しの写り込みを避けるため文字なしの元絵を優先 */
+async function prevPic(i,noText){
+  for(let j=i-1;j>=0;j--){
+    const v=cur(j);if(!v)continue;
+    if(noText&&v.raw)return await rawImage(v);
+    if(IMG[j])return IMG[j];
+  }
+  return null;
+}
 async function callImage(i,noText){
   const k=S.koma[i];
-  const pv=$('#chain').checked?prevImg(i):null;
+  const pv=$('#chain').checked?await prevPic(i,noText):null;
   const body={mode:'image',shot:k.shot||'バストアップ',
     face:(k.face||'基本')+'　'+(FACE_RULE[k.face||'基本']||''),
     art:noText?NOTEXT_PREFIX+k.art+NOTEXT_SUFFIX:k.art,
@@ -784,6 +887,7 @@ function tick(el,label){
   return ()=>clearInterval(id);
 }
 async function drawOne(i,quiet,noText){
+  if(noText===undefined)noText=bakeMode();
   const k=S.koma[i],stt=$(`[data-ks="${i}"]`),err=$('#drawErr');
   if(!quiet)err.classList.add('hide');
   if(!k.art){err.textContent=`${i+1}コマ目の「絵」が空です。`;err.classList.remove('hide');return false;}
@@ -814,14 +918,19 @@ async function drawOne(i,quiet,noText){
 async function drawTwo(i){
   const k=S.koma[i],stt=$(`[data-ks="${i}"]`),err=$('#drawErr');err.classList.add('hide');
   if(!k.art){err.textContent=`${i+1}コマ目の「絵」が空です。`;err.classList.remove('hide');return;}
+  const noText=bakeMode();
   const pid=$('#chain').checked?prevId(i):null;
   BUSY[i]=true;refreshAll();
   const stop=tick(stt,'2枚いっしょに描いています');
   try{
-    const rs=await Promise.allSettled([callImage(i),callImage(i)]);
+    const rs=await Promise.allSettled([callImage(i,noText),callImage(i,noText)]);
     const ok=rs.filter(r=>r.status==='fulfilled').map(r=>r.value);
     if(!ok.length)throw new Error('2枚とも描けませんでした');
-    ok.forEach(bl=>pushVersion(i,bl,pid));
+    for(const bl of ok){
+      if(noText){pushVersion(i,bl,pid,{raw:bl,bub:BUB_DEF()});
+        await bakeVersion(i,cur(i));}
+      else pushVersion(i,bl,pid);
+    }
     await loadImg(i);
     stop();stt.textContent=ok.length===2?'2枚できました。サムネで見くらべてください':'1枚だけできました';
     BUSY[i]=false;refreshAll();save();
@@ -831,10 +940,17 @@ async function drawTwo(i){
   }
 }
 async function redrawFrom(i){
+  let redrew=false;
   for(let j=i;j<4;j++){
     if(j>i&&!cur(j)&&!S.koma[j].art)continue;
+    const v=cur(j),k=S.koma[j];
+    // セリフしか変わっていない後入れコマは、描き直さず無料で入れ直す
+    if(!redrew&&v&&v.raw&&v.art===k.art&&v.shot===k.shot&&v.face===k.face
+       &&!sameLines(v.lines,k.lines)){await relabel(j);continue;}
+    if(!redrew&&j>i&&v&&!staleReason(j))continue;
     const ok=await drawOne(j,true);
     if(!ok)return;
+    redrew=true;
   }
 }
 $('#fixAll').onclick=e=>redrawFrom(+(e.currentTarget.dataset.from||0));
@@ -1004,6 +1120,15 @@ $('#theme').oninput=e=>{S.theme=e.target.value;save();};
 ['n1','n2','n3'].forEach((id,i)=>$('#'+id).oninput=e=>{S.notes[i]=e.target.value;renderSheet();save();});
 $('#blank').onclick=()=>{show();drawEd();};
 $('#chain').onchange=()=>{refreshAll();};
+$('#smode').onchange=e=>{S.smode=e.target.value;refreshAll();save();};
+$('#bfont').onchange=async e=>{
+  S.bfont=e.target.value;save();
+  for(let i=0;i<4;i++){const v=cur(i);
+    if(v&&v.raw){BUSY[i]=true;refreshAll();
+      try{await bakeVersion(i,v);}catch(err){}
+      BUSY[i]=false;}}
+  refreshAll();save();
+};
 $('#reset').onclick=async()=>{
   if(!confirm('いまの内容（ネームと絵）を消して、白紙から作りはじめます。よろしいですか。\n※「これまでの回」に保存したものは消えません。'))return;
   clearImages();
@@ -1036,6 +1161,8 @@ CHECKS.forEach(t=>{const l=document.createElement('label');l.className='chk';
       shot:k.shot||'バストアップ',face:k.face||'基本'}));
     $('#issue').value=S.issue||'';$('#month').value=S.month||'';$('#theme').value=S.theme||'';
     $('#n1').value=S.notes[0]||'';$('#n2').value=S.notes[1]||'';$('#n3').value=S.notes[2]||'';
+    $('#bfont').value=S.bfont||'Zen Maru Gothic';
+    $('#smode').value=S.smode||'bake';
     if(Array.isArray(d.V)){V=d.V.map(l=>Array.isArray(l)?l:[]);}
     if(Array.isArray(d.SEL))SEL=d.SEL.map(x=>typeof x==='number'?x:-1);
     if(typeof d.seq==='number')seq=d.seq;
