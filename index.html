@@ -146,7 +146,7 @@ details.auto .inner select{margin-bottom:10px;background:#fff;}
 
 <div class="hdr">
   <h1>四コマスタジオ</h1>
-  <div class="sub">ふむふむ瓦版　820 × 2538px　<span style="color:#A1A1AA">｜　2026-08-25b版（セリフ後入れ標準）</span></div>
+  <div class="sub">ふむふむ瓦版　820 × 2538px　<span style="color:#A1A1AA">｜　2026-08-25c版（注釈を大きく）</span></div>
 </div>
 
 <div class="wrap">
@@ -372,7 +372,7 @@ function renderSheet(){
     const n=document.createElement('span');n.className='no';n.textContent=i+1;f.appendChild(n);
     sh.appendChild(f);
     if(i<3&&S.notes[i]){const g=document.createElement('div');
-      g.style.cssText='font-size:8.5px;color:#888;text-align:right;margin:-4.4% 0 4.4%';
+      g.style.cssText='font-size:11px;font-weight:500;color:#555;text-align:right;margin:-5% 0 5%;line-height:1.4';
       g.textContent=S.notes[i];sh.appendChild(g);}
   });
   const n=[0,1,2,3].filter(i=>IMG[i]).length;
@@ -1004,8 +1004,12 @@ function drawSheetTo(c,k){
     x.strokeRect(BD*k/2,y*k+BD*k/2,W*k-BD*k,PH*k-BD*k);
     y+=PH;
     if(i<3){const n=(S.notes[i]||'').trim();
-      if(n){x.fillStyle='#000';x.font=(21*k)+'px "Noto Sans JP",sans-serif';
-        x.textAlign='right';x.textBaseline='top';x.fillText(n,(W-8)*k,(y+12)*k);}
+      if(n){let fs=32;
+        x.font='500 '+(fs*k)+'px "Noto Sans JP",sans-serif';
+        while(fs>18&&x.measureText(n).width>(W-24)*k){fs-=1;
+          x.font='500 '+(fs*k)+'px "Noto Sans JP",sans-serif';}
+        x.fillStyle='#000';x.textAlign='right';x.textBaseline='middle';
+        x.fillText(n,(W-10)*k,(y+G/2+1)*k);}
       y+=G;}
   });
 }
