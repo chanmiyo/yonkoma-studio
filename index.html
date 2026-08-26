@@ -153,7 +153,7 @@ details.auto .inner select{margin-bottom:10px;background:#fff;}
 
 <div class="hdr">
   <h1>四コマスタジオ</h1>
-  <div class="sub">ふむふむ瓦版　820 × 2538px　<span style="color:#A1A1AA">｜　2026-08-25h版（縦書き・自由しっぽ）</span></div>
+  <div class="sub">ふむふむ瓦版　820 × 2538px　<span style="color:#A1A1AA">｜　2026-08-25j版（後ろ姿の見本対応）</span></div>
 </div>
 
 <div class="wrap">
@@ -268,7 +268,7 @@ details.auto .inner select{margin-bottom:10px;background:#fff;}
 const HOOK='https://hook.eu2.make.com/2zdng4azz3he6q8vexxuyxll3v8rnbyp';
 const W=820,PH=600,G=46,BD=3,TH=PH*4+G*3;
 const KANJI=['起','承','転','結'];
-const SHOTS=['バストアップ','顔のアップ','全身（立ち）','全身（ばんざい）','全身（後ろ姿）'];
+const SHOTS=['バストアップ','顔のアップ','全身（立ち）','全身（ばんざい）','全身（後ろ姿）','モノのアップ（キャラなし）'];
 const FACES=['基本','笑顔（目を閉じる）','感激・大好き','お願い・上目づかい',
  'じと目・不機嫌','あわてる','メガネ（作業中）','イライラ・怒り'];
 const FACE_KEY={'基本':'kihon','笑顔（目を閉じる）':'egao','感激・大好き':'kangeki',
@@ -664,7 +664,9 @@ function refresh(i){
 
   const sum=box.querySelector(`[data-autosum="${i}"]`);
   sum.innerHTML='';
-  const b1=document.createElement('b');b1.textContent=(S.koma[i].shot||'バストアップ')+'／'+(S.koma[i].face||'基本');
+  const sh1=S.koma[i].shot||'バストアップ';
+  const b1=document.createElement('b');
+  b1.textContent=sh1==='モノのアップ（キャラなし）'?sh1:sh1+'／'+(S.koma[i].face||'基本');
   const m1=document.createElement('span');m1.className='memo';m1.textContent='直すときだけ開く';
   sum.appendChild(b1);sum.appendChild(m1);
 
@@ -1028,7 +1030,7 @@ async function callImage(i,noText,snap){
   const k=snap||S.koma[i];
   const pv=$('#chain').checked?await prevPic(i,noText):null;
   const body={mode:'image',shot:k.shot||'バストアップ',
-    faceKey:FACE_KEY[k.face||'基本']||'kihon',
+    faceKey:k.shot==='全身（後ろ姿）'?'ushiro':(FACE_KEY[k.face||'基本']||'kihon'),
     face:(k.face||'基本')+'　'+(FACE_RULE[k.face||'基本']||''),
     art:noText?NOTEXT_PREFIX+k.art+NOTEXT_SUFFIX:k.art,
     lines:noText?'なし。吹き出しそのものを描かない':
