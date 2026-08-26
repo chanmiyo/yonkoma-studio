@@ -62,22 +62,29 @@ input:focus,textarea:focus,select:focus{outline:0;border-color:var(--accent);
 .shot .busy{position:absolute;inset:0;background:rgba(255,255,255,.82);display:flex;
  align-items:center;justify-content:center;font-size:12.5px;color:#3F3F46;flex-direction:column;gap:6px;}
 .vstrip{display:flex;gap:6px;overflow-x:auto;padding:8px 0 2px;min-height:8px;}
-.vthumb{flex:none;width:56px;border:2px solid transparent;border-radius:6px;padding:0;
+.vthumb{flex:none;width:72px;border:2px solid transparent;border-radius:6px;padding:0;
  background:#fff;position:relative;overflow:hidden;line-height:0;}
 .vthumb img{width:100%;aspect-ratio:820/600;object-fit:cover;display:block;border-radius:4px;}
 .vthumb.on{border-color:var(--accent);}
 .vthumb .n{position:absolute;left:2px;top:1px;background:rgba(0,0,0,.55);color:#fff;
- font-size:9.5px;line-height:1.5;padding:0 4px;border-radius:4px;}
+ font-size:10px;line-height:1.6;padding:0 5px;border-radius:4px;}
 .vthumb .x{position:absolute;right:1px;top:0px;background:rgba(0,0,0,.55);color:#fff;
- font-size:10px;line-height:1.4;padding:0 4px;border-radius:4px;cursor:pointer;}
+ font-size:12px;line-height:1.5;padding:1px 6px;border-radius:4px;cursor:pointer;}
 .vinfo{font-size:11.5px;color:var(--sub);margin:2px 0 8px;}
 .bubctl{background:#F4F4F5;border-radius:8px;padding:8px 11px;margin-top:8px;font-size:12.5px;color:var(--ink);}
 .bubctl .bl{display:flex;align-items:center;gap:7px;flex-wrap:wrap;padding:3px 0;}
 .bubctl .bl b{font-weight:600;min-width:52px;}
-.bubctl button{background:#fff;border:1px solid var(--line);border-radius:6px;
- width:28px;height:26px;font-size:14px;line-height:1;padding:0;}
+.bubctl button{background:#fff;border:1px solid var(--line);border-radius:8px;
+ width:40px;height:40px;font-size:17px;line-height:1;padding:0;}
 .bubctl button:disabled{opacity:.35;}
-.bubctl select{width:auto;padding:3px 8px;font-size:12.5px;margin:0;}
+.bubctl select{width:auto;padding:8px 10px;font-size:13px;margin:0;}
+/* スマホ用：できあがりプレビューへの行き来ボタン */
+.jump{display:none;}
+@media(max-width:960px){
+  .jump{display:block;position:fixed;right:14px;bottom:14px;z-index:30;
+   background:var(--ink);color:#fff;border:0;border-radius:99px;
+   padding:12px 18px;font-size:13.5px;font-weight:600;box-shadow:0 4px 14px rgba(0,0,0,.25);}
+}
 .warnbox{background:var(--warn-w);border:1px solid #FDE68A;border-radius:8px;padding:10px 12px;
  font-size:12.5px;color:#78350F;margin-top:10px;display:flex;gap:8px;align-items:center;flex-wrap:wrap;}
 .kstat{font-size:12.5px;color:var(--sub);min-height:18px;margin-top:8px;}
@@ -146,44 +153,44 @@ details.auto .inner select{margin-bottom:10px;background:#fff;}
 
 <div class="hdr">
   <h1>四コマスタジオ</h1>
-  <div class="sub">ふむふむ瓦版　820 × 2538px　<span style="color:#A1A1AA">｜　2026-08-25f版（表情の実物見本を参照）</span></div>
+  <div class="sub">ふむふむ瓦版　820 × 2538px　<span style="color:#A1A1AA">｜　2026-08-25h版（縦書き・自由しっぽ）</span></div>
 </div>
 
 <div class="wrap">
 <div class="work">
 
   <div class="card">
-    <h2>ネームを起こす</h2>
+    <h2>① ネームを作る</h2>
     <p class="lede">その日あった出来事を、人に話すつもりで書いてください。具体的なほど良いネームになります。</p>
     <div class="grid2">
-      <div><label class="fl">号数</label>
-        <input type="text" id="issue" placeholder="2026年9月号"></div>
-      <div><label class="fl">対象月（季節に反映）</label>
-        <input type="text" id="month" placeholder="2026年9月"></div>
+      <div><label class="fl">掲載する号</label>
+        <input type="text" id="issue" placeholder="例：2026年9月号"></div>
+      <div><label class="fl">何月の話か（絵の季節に使います）</label>
+        <input type="text" id="month" placeholder="例：2026年9月"></div>
     </div>
     <label class="fl">テーマ・出来事</label>
     <textarea id="theme" rows="3" placeholder="例：うしくりーん作戦で集合写真を撮ろうとドローンを用意したら、直前にアップデートが始まってiPhoneで撮った"></textarea>
     <div class="row" style="margin-top:14px">
-      <button class="btn go" id="gen">まずネームを作る</button>
+      <button class="btn go" id="gen" disabled>まずネームを作る</button>
     </div>
+    <div id="genErr" class="err hide"></div>
     <div class="hint" style="margin-top:10px">ネームを読んで、セリフを短く直してから絵にします。
       ここで直しておくと文字化けが減り、引き直しの回数が減ります。ネームは何度作り直してもほぼ費用がかかりません。</div>
     <div id="allState" style="font-size:13.5px;color:#3F3F46;margin-top:12px;min-height:20px"></div>
     <div class="row" style="margin-top:10px">
-      <button class="btn ghost sm" id="all" title="ネームを見ずに4枚描いて版下まで作ります。急ぐときだけ">おまかせで一気に版下まで作る</button>
-      <button class="btn ghost sm" id="blank">白紙から書く</button>
-      <button class="btn ghost sm" id="reset">新しく作りはじめる</button>
+      <button class="btn ghost sm" id="all" disabled title="ネームを見ずに4枚描いて版下まで作ります。急ぐときだけ">おまかせで一気に最後まで作る</button>
+      <button class="btn ghost sm" id="blank" disabled>ネームを使わず自分で書く</button>
+      <button class="btn ghost sm" id="reset" disabled>ぜんぶ消して最初から</button>
     </div>
-    <div id="genErr" class="err hide"></div>
   </div>
 
   <div class="topwarn hide" id="topWarn">
     <span id="topWarnTxt"></span>
-    <button class="btn warnbtn sm" id="fixAll">要るところをまとめて描き直す</button>
+    <button class="btn warnbtn sm" id="fixAll">変わったところをまとめて描き直す</button>
   </div>
 
   <div class="card hide" id="komaCard">
-    <h2>ネームを直して、絵にする</h2>
+    <h2>② セリフと絵を直して、1コマずつ描く</h2>
     <p class="lede">構図と表情はネームといっしょに自動で決まります。気になるコマだけ開いて直してください。<br>
       セリフは1コマ2つまで、1つ20文字以内。10文字以下だと文字化けしにくいです。絵の欄に看板や画面の文字を書くと化けるので書かないでください。</p>
     <div id="komaEd"></div>
@@ -208,11 +215,18 @@ details.auto .inner select{margin-bottom:10px;background:#fff;}
       <button class="btn" id="drawAll">4コマまとめて描く</button>
       <span id="drawState" style="font-size:12.5px;color:var(--sub)"></span>
     </div>
+    <div class="hint" style="margin-top:10px">絵は1枚あたり約1分・数十円かかります。ネームの作り直しやセリフの入れ直しは何度でもほぼ無料です。</div>
     <div id="drawErr" class="err hide"></div>
   </div>
 
+  <div class="card hide" id="chkCard">
+    <h2>③ 仕上がりチェック</h2>
+    <p class="lede">1枚にまとめる前にここを見てください。崩れたコマは「このコマを描き直す」で引き直せます。前の絵は残るので、いつでも戻せます。</p>
+    <div id="checks"></div>
+  </div>
+
   <div class="card hide" id="outCard">
-    <h2>版下を書き出す</h2>
+    <h2>④ 1枚にまとめて保存する（版下）</h2>
     <p class="lede">百先生の原稿と同じ 820 × 2538px に組みます。画面で確かめてから保存できます。</p>
     <label class="fl">注釈（コマの間に入る小さな文字・空欄可）</label>
     <input type="text" id="n1" placeholder="1コマ目と2コマ目の間" style="margin-bottom:7px">
@@ -222,18 +236,12 @@ details.auto .inner select{margin-bottom:10px;background:#fff;}
       <label class="chk" style="border:0"><input type="checkbox" id="x2">印刷用に2倍で書き出す</label>
     </div>
     <div class="row" style="margin-top:4px">
-      <button class="btn" id="make" disabled>版下を組んで表示する</button>
+      <button class="btn" id="make" disabled>4コマを1枚にまとめて表示</button>
       <button class="btn ghost" id="dl" disabled>ダウンロード</button>
       <button class="btn ghost" id="keep" disabled>この回を保存する</button>
       <span id="dlNote" style="font-size:12.5px;color:var(--sub)"></span>
     </div>
     <div id="pv" class="pv hide"></div>
-  </div>
-
-  <div class="card hide" id="chkCard">
-    <h2>朱入れ</h2>
-    <p class="lede">書き出す前にここを見てください。崩れたコマは「描き直す」で引き直せます。前の絵は残るので、いつでも戻せます。</p>
-    <div id="checks"></div>
   </div>
 
   <div class="card">
@@ -253,6 +261,8 @@ details.auto .inner select{margin-bottom:10px;background:#fff;}
   <div class="state" id="saveState">　</div>
 </div>
 </div>
+
+<button class="jump" id="jump">できあがりを見る ▼</button>
 
 <script>
 const HOOK='https://hook.eu2.make.com/2zdng4azz3he6q8vexxuyxll3v8rnbyp';
@@ -287,7 +297,14 @@ let V=[[],[],[],[]];          // コマごとの絵の履歴
 let SEL=[-1,-1,-1,-1];        // いま選んでいる版
 let IMG=[null,null,null,null];// 選んでいる版の Image（版下組みに使う）
 let BUSY=[false,false,false,false];
-let sheetBlob=null;
+let sheetBlob=null,sheetBuilt=false;
+/* 絵・セリフ・注釈が変わったら、古い版下をダウンロードできないようにする */
+function invalidateSheet(){
+  sheetBlob=null;
+  const dl=$('#dl');if(dl)dl.disabled=true;
+  if(sheetBuilt){const nte=$('#dlNote');
+    if(nte)nte.textContent='内容が変わりました。もう一度「4コマを1枚にまとめて表示」を押してください';}
+}
 let seq=1;
 
 /* ---------------- 保存（IndexedDB） ---------------- */
@@ -301,30 +318,42 @@ function openDB(){return new Promise(res=>{
   r.onerror=()=>res(null);});}
 function st(name,mode){return db.transaction(name,mode).objectStore(name);}
 function dbPut(name,val){return new Promise((res,rej)=>{if(!db)return res();
-  const q=st(name,'readwrite').put(val);q.onsuccess=()=>res();q.onerror=()=>rej(q.error);});}
+  let q;try{q=st(name,'readwrite').put(val);}catch(e){return rej(e);}
+  q.onsuccess=()=>res();q.onerror=()=>rej(q.error);});}
 function dbGet(name,key){return new Promise(res=>{if(!db)return res(null);
-  const q=st(name,'readonly').get(key);q.onsuccess=()=>res(q.result||null);q.onerror=()=>res(null);});}
+  let q;try{q=st(name,'readonly').get(key);}catch(e){return res(null);}
+  q.onsuccess=()=>res(q.result||null);q.onerror=()=>res(null);});}
 function dbAll(name){return new Promise(res=>{if(!db)return res([]);
-  const q=st(name,'readonly').getAll();q.onsuccess=()=>res(q.result||[]);q.onerror=()=>res([]);});}
+  let q;try{q=st(name,'readonly').getAll();}catch(e){return res([]);}
+  q.onsuccess=()=>res(q.result||[]);q.onerror=()=>res([]);});}
 function dbDel(name,key){return new Promise(res=>{if(!db)return res();
-  const q=st(name,'readwrite').delete(key);q.onsuccess=()=>res();q.onerror=()=>res();});}
+  let q;try{q=st(name,'readwrite').delete(key);}catch(e){return res();}
+  q.onsuccess=()=>res();q.onerror=()=>res();});}
 
 let saveT=null;
+async function doSave(){
+  if(!db)return;
+  const V2=V.map(list=>list.map(v=>({id:v.id,ts:v.ts,blob:v.blob,shot:v.shot,
+    face:v.face,art:v.art,lines:v.lines,prevId:v.prevId,
+    raw:v.raw||null,
+    bub:v.bub?v.bub.map(b=>({x:b.x,y:b.y,s:b.s||1,t:b.t||'auto',v:b.v===1?1:0,tx:typeof b.tx==='number'?b.tx:null,ty:typeof b.ty==='number'?b.ty:null})):null})));
+  try{await dbPut('state',{id:'current',S,V:V2,SEL,seq});
+    $('#saveState').textContent='保存しました';
+    setTimeout(()=>{if($('#saveState').textContent==='保存しました')$('#saveState').textContent='　';},1400);
+  }catch(e){$('#saveState').textContent='保存できませんでした';}
+}
 function save(){
   try{localStorage.setItem('yonkoma',JSON.stringify(S));}catch(e){}
   clearTimeout(saveT);
-  saveT=setTimeout(async()=>{
-    if(!db)return;
-    const V2=V.map(list=>list.map(v=>({id:v.id,ts:v.ts,blob:v.blob,shot:v.shot,
-      face:v.face,art:v.art,lines:v.lines,prevId:v.prevId,
-      raw:v.raw||null,
-      bub:v.bub?v.bub.map(b=>({x:b.x,y:b.y,s:b.s||1,t:b.t||'auto'})):null})));
-    try{await dbPut('state',{id:'current',S,V:V2,SEL,seq});
-      $('#saveState').textContent='保存しました';
-      setTimeout(()=>{if($('#saveState').textContent==='保存しました')$('#saveState').textContent='　';},1400);
-    }catch(e){$('#saveState').textContent='保存できませんでした';}
-  },500);
+  saveT=setTimeout(doSave,500);
 }
+/* 有料の絵ができた直後などは、デバウンスを待たずに即保存する */
+function flushSave(){
+  try{localStorage.setItem('yonkoma',JSON.stringify(S));}catch(e){}
+  clearTimeout(saveT);saveT=null;
+  return doSave();
+}
+window.addEventListener('pagehide',()=>{if(saveT)flushSave();});
 
 /* ---------------- 履歴のたすけ ---------------- */
 const cur=i=>(SEL[i]>=0?V[i][SEL[i]]:null)||null;
@@ -349,13 +378,20 @@ function loadImg(i){
   return new Promise(res=>{const im=new Image();
     im.onload=()=>{IMG[i]=im;res();};im.onerror=()=>{IMG[i]=null;res();};im.src=vurl(v);});
 }
-function pushVersion(i,blob,pid,extra){
-  const k=S.koma[i];
+function freeVersion(v){
+  if(!v)return;
+  if(v._url){URL.revokeObjectURL(v._url);v._url=null;}
+  if(v._rawim){try{URL.revokeObjectURL(v._rawim.src);}catch(e){}v._rawim=null;}
+}
+function pushVersion(i,blob,pid,extra,snap){
+  const k=snap||S.koma[i];
   V[i].push({id:'v'+(seq++),ts:Date.now(),blob,shot:k.shot,face:k.face,
     art:k.art,lines:[k.lines[0]||'',k.lines[1]||''],prevId:pid,...(extra||{})});
-  if(V[i].length>8){const gone=V[i].shift();if(gone._url)URL.revokeObjectURL(gone._url);}
+  if(V[i].length>8)freeVersion(V[i].shift());
   SEL[i]=V[i].length-1;
 }
+function snapKoma(i){const k=S.koma[i];
+  return {art:k.art,shot:k.shot,face:k.face,lines:[k.lines[0]||'',k.lines[1]||'']};}
 
 /* ---------------- 画面をつくる ---------------- */
 function show(){['#komaCard','#outCard','#chkCard'].forEach(s=>$(s).classList.remove('hide'));}
@@ -381,8 +417,8 @@ function renderSheet(){
   const n=[0,1,2,3].filter(i=>IMG[i]).length;
   $('#make').disabled=n<4;
   $('#keep').disabled=n<4;
-  $('#dlNote').textContent=n<4?`4枚そろうと押せます（いま${n}枚）`:'';
-  if(n<4){$('#dl').disabled=true;}
+  if(n<4){$('#dlNote').textContent=`4枚そろうと押せます（いま${n}枚）`;$('#dl').disabled=true;}
+  else if(sheetBlob)$('#dlNote').textContent='';
 }
 
 function komaHTML(i){
@@ -394,7 +430,7 @@ function komaHTML(i){
       <div class="vinfo" data-vinfo="${i}"></div>
       <div class="row">
         <button class="btn sm" data-draw="${i}">このコマを描く</button>
-        <button class="btn ghost sm" data-draw2="${i}" title="同じ指示で2枚いっしょに描いて、良いほうを選べます。料金は2枚分かかります">2枚描いて選ぶ</button>
+        <button class="btn ghost sm" data-draw2="${i}" title="同じ指示で2枚いっしょに描いて、良いほうを選べます。料金は2枚分かかります">2枚描いて選ぶ（2枚分の料金）</button>
         <button class="btn ghost sm" data-undo="${i}" title="ひとつ前に描いた絵に戻します">1つ前に戻す</button>
         ${i<3?`<button class="btn ghost sm" data-chain="${i}" title="このコマと、その後ろのコマを順に描きます">ここから後ろを描く</button>`:''}
       </div>
@@ -445,6 +481,16 @@ function drawEd(){
       const [i2,j]=t.dataset.bt.split('-').map(Number);
       const v2=cur(i2);if(!v2||!v2.raw||BUSY.some(Boolean))return;
       normBub(v2);v2.bub[j].t=t.value;
+      if(t.value==='free'&&typeof v2.bub[j].tx!=='number'){
+        v2.bub[j].tx=v2.bub[j].x;
+        v2.bub[j].ty=Math.max(0.02,Math.min(0.98,v2.bub[j].y+(v2.bub[j].y<0.5?0.28:-0.28)));
+      }
+      bakeVersion(i2,v2).then(()=>{refreshAll();save();});
+      return;}
+    if(t.dataset.bv!==undefined){
+      const [i2,j]=t.dataset.bv.split('-').map(Number);
+      const v2=cur(i2);if(!v2||!v2.raw||BUSY.some(Boolean))return;
+      normBub(v2);v2.bub[j].v=+t.value;
       bakeVersion(i2,v2).then(()=>{refreshAll();save();});
       return;}
     const i=+t.dataset.k,f=t.dataset.f;if(f===undefined)return;
@@ -484,10 +530,10 @@ function attachDrag(shot,i,v){
   const hint=document.createElement('div');
   hint.style.cssText='position:absolute;left:6px;bottom:5px;background:rgba(0,0,0,.5);color:#fff;'+
     'font-size:10.5px;line-height:1.6;padding:1px 7px;border-radius:5px;pointer-events:none;';
-  hint.textContent='吹き出しはドラッグで動かせます';
+  hint.textContent='吹き出しも、しっぽの先（○）もドラッグで動かせます';
   shot.appendChild(hint);
   normBub(v);
-  let rects=[null,null],drag=-1;
+  let rects=[null,null],drag=-1,dragTip=false;
   const off=document.createElement('canvas');
   let cut=0;
   const size=()=>{const r=shot.getBoundingClientRect();
@@ -502,7 +548,16 @@ function attachDrag(shot,i,v){
     rects=paintBaked(off.getContext('2d'),im,i,v.bub,off.width,off.height);
     const x=c.getContext('2d');
     x.clearRect(0,0,c.width,c.height);
+    const scale=c.width/(off.width-cut*2);
     x.drawImage(off,cut,0,off.width-cut*2,off.height,0,0,c.width,c.height);
+    // しっぽの先のつまみ（画面だけ。版下には出ない）
+    rects.forEach(rc=>{
+      if(!rc||!rc.tip)return;
+      const hx=(rc.tip[0]-cut)*scale,hy=rc.tip[1]*(c.height/off.height);
+      x.beginPath();x.arc(hx,hy,Math.max(7,c.width*0.016),0,Math.PI*2);
+      x.fillStyle='rgba(255,255,255,.9)';x.fill();
+      x.lineWidth=2;x.strokeStyle='#2563EB';x.stroke();
+    });
   };
   rawImage(v).then(()=>{size();paint();});
   const pos=e=>{const r=c.getBoundingClientRect();
@@ -511,17 +566,27 @@ function attachDrag(shot,i,v){
     return {x:(cut+px*(off.width-cut*2))/off.width,y:py};};
   c.onpointerdown=e=>{
     const p=pos(e),X=p.x*off.width,Y=p.y*off.height;
-    const pad=off.height*0.02;
-    drag=-1;
-    rects.forEach((rc,j)=>{if(rc&&X>=rc.bx-pad&&X<=rc.bx+rc.bw+pad&&Y>=rc.by-pad&&Y<=rc.by+rc.bh+pad)drag=j;});
+    const pad=off.height*0.02,tipR=off.height*0.05;
+    drag=-1;dragTip=false;
+    // しっぽの先を優先してつかむ
+    rects.forEach((rc,j)=>{if(rc&&rc.tip&&Math.hypot(X-rc.tip[0],Y-rc.tip[1])<tipR){drag=j;dragTip=true;}});
+    if(drag<0)rects.forEach((rc,j)=>{
+      if(rc&&X>=rc.bx-pad&&X<=rc.bx+rc.bw+pad&&Y>=rc.by-pad&&Y<=rc.by+rc.bh+pad)drag=j;});
     if(drag<0)return;
     c.setPointerCapture(e.pointerId);c.style.cursor='grabbing';e.preventDefault();
   };
   c.onpointermove=e=>{
     if(drag<0)return;
     const p=pos(e);
-    v.bub[drag].x=Math.max(0,Math.min(1,p.x));
-    v.bub[drag].y=Math.max(0,Math.min(1,p.y));
+    const loX=(cut+4)/off.width, hiX=(off.width-cut-4)/off.width;
+    if(dragTip){
+      v.bub[drag].t='free';
+      v.bub[drag].tx=Math.max(loX,Math.min(hiX,p.x));
+      v.bub[drag].ty=Math.max(0.01,Math.min(0.99,p.y));
+    }else{
+      v.bub[drag].x=Math.max(0,Math.min(1,p.x));
+      v.bub[drag].y=Math.max(0,Math.min(1,p.y));
+    }
     paint();
   };
   c.onpointerup=c.onpointercancel=async e=>{
@@ -535,9 +600,11 @@ function attachDrag(shot,i,v){
 function refresh(i){
   const box=$('#koma'+i);if(!box)return;
   const v=cur(i),reason=staleReason(i);
+  const serifOnly=!!(reason&&reason.startsWith('セリフが変わって'));
   const badge=box.querySelector(`[data-badge="${i}"]`);
   badge.className='badge '+(!v?'none':reason?'stale':'ok');
-  badge.textContent=!v?'まだ描いていません':reason?'要・描き直し':'描けました';
+  badge.textContent=!v?'まだ描いていません':
+    reason?(serifOnly?'セリフを反映してください（無料）':'描き直しが必要'):'描けました';
   box.classList.toggle('stale',!!reason);
 
   const shot=box.querySelector(`[data-shot="${i}"]`);
@@ -563,8 +630,13 @@ function refresh(i){
         return `<div class="bl"><b>セリフ${j+1}</b>
           文字 <button data-bs="${i}-${j}" data-op="-" ${b.s<=0.7?'disabled':''}>−</button>
           <button data-bs="${i}-${j}" data-op="+" ${b.s>=1.6?'disabled':''}>＋</button>
+          <select data-bv="${i}-${j}" title="文字の向き">
+            <option value="0"${b.v!==1?' selected':''}>横書き</option>
+            <option value="1"${b.v===1?' selected':''}>縦書き</option>
+          </select>
           しっぽ <select data-bt="${i}-${j}">
             <option value="auto"${b.t==='auto'?' selected':''}>自動</option>
+            <option value="free"${b.t==='free'?' selected':''}>自由（○をドラッグ）</option>
             <option value="down"${b.t==='down'?' selected':''}>下</option>
             <option value="up"${b.t==='up'?' selected':''}>上</option>
             <option value="left"${b.t==='left'?' selected':''}>左</option>
@@ -612,9 +684,11 @@ function refreshAll(){
   if(bad.length&&!busy){
     tw.classList.remove('hide');
     const from=Math.min(...bad);
-    $('#topWarnTxt').textContent=
-      bad.map(i=>i+1).join('・')+'コマ目が、いまの内容と合っていません。'+
-      (from<3?`${from+1}〜4コマ目を順に描き直すと揃います。`:'4コマ目を描き直すと揃います。');
+    const allSerif=bad.every(i=>{const r=staleReason(i);return r&&r.startsWith('セリフが変わって');});
+    $('#topWarnTxt').textContent=allSerif?
+      bad.map(i=>i+1).join('・')+'コマ目のセリフが変わっています。無料で入れ直せます。':
+      bad.map(i=>i+1).join('・')+'コマ目が、いまの内容と合っていません。描き直した枚数分の料金がかかります。';
+    $('#fixAll').textContent=allSerif?'まとめて入れ直す（無料）':'変わったところをまとめて描き直す';
     $('#fixAll').dataset.from=from;
   }else tw.classList.add('hide');
   renderSheet();
@@ -625,6 +699,8 @@ function refreshAll(){
     b.querySelector(`[data-draw="${i}"]`).disabled=busy;
     b.querySelector(`[data-draw2="${i}"]`).disabled=busy;
     const ch=b.querySelector(`[data-chain="${i}"]`);if(ch)ch.disabled=busy;
+    const nt=b.querySelector(`[data-notext="${i}"]`);if(nt)nt.disabled=busy;
+    const rl=b.querySelector(`[data-relabel="${i}"]`);if(rl)rl.disabled=busy;
     b.querySelector(`[data-undo="${i}"]`).disabled=busy||SEL[i]<=0;});
   const t=todo(),un=[0,1,2,3].filter(i=>!cur(i));
   const da=$('#drawAll');
@@ -644,15 +720,17 @@ function count(){$$('[data-c]').forEach(el=>{const [i,j]=el.dataset.c.split('-')
 /* ---------------- 版の切り替え ---------------- */
 async function pick(i,j){
   if(BUSY.some(Boolean))return;
-  SEL[i]=j;await loadImg(i);refreshAll();save();
+  SEL[i]=j;invalidateSheet();await loadImg(i);refreshAll();save();
 }
 async function undo(i){if(SEL[i]>0)await pick(i,SEL[i]-1);}
 async function delVersion(i,j){
   if(BUSY.some(Boolean))return;
-  const v=V[i][j];if(v&&v._url)URL.revokeObjectURL(v._url);
+  if(!confirm(`${i+1}コマ目の${j+1}枚目の絵を消します。元に戻せません。よろしいですか。`))return;
+  freeVersion(V[i][j]);
   V[i].splice(j,1);
   if(SEL[i]>=V[i].length)SEL[i]=V[i].length-1;
   else if(SEL[i]>j)SEL[i]--;
+  invalidateSheet();
   await loadImg(i);refreshAll();save();
 }
 
@@ -717,18 +795,22 @@ function autoAssign(arr){
 }
 
 async function genName(){
+  if(BUSY.some(Boolean))return false;
   const th=$('#theme').value.trim(),err=$('#genErr');err.classList.add('hide');
-  if(!th){err.textContent='テーマを入れてください。';err.classList.remove('hide');return false;}
-  const b=$('#gen');b.disabled=true;b.innerHTML='<span class="spin"></span>考えています';
+  if(!th){err.textContent='テーマを入れてください。';err.classList.remove('hide');
+    err.scrollIntoView({behavior:'smooth',block:'center'});return false;}
+  const b=$('#gen');b.disabled=true;b.innerHTML='<span class="spin"></span>考えています（10秒ほど）';
   try{
     const u=HOOK+'?theme='+encodeURIComponent(th)+'&month='+encodeURIComponent($('#month').value.trim());
-    const r=await fetch(u);
-    if(!r.ok)throw new Error('通信に失敗しました（'+r.status+'）');
+    let r;
+    try{r=await fetch(u,{signal:AbortSignal.timeout(90000)});}
+    catch(e){throw netErr(e);}
+    if(!r.ok)throw new Error('サーバーの調子が悪いようです。1分ほど待って、もう一度押してください（番号:'+r.status+'）');
     let t=(await r.text()).trim();
-    if(t==='Accepted')throw new Error('Makeが「Accepted」を返しました。もう一度押してください。');
+    if(t==='Accepted')throw new Error('準備に時間がかかっているようです。10秒ほど待って、もう一度押してください');
     t=t.replace(/```json/g,'').replace(/```/g,'').trim();
     const arr=parseKoma(t);
-    if(!Array.isArray(arr)||arr.length!==4)throw new Error('4コマ分の形になりませんでした。もう一度押してください。');
+    if(!Array.isArray(arr)||arr.length!==4)throw new Error('4コマ分の形になりませんでした。もう一度押してください');
     S.koma=autoAssign(arr).map(k=>({art:String(k.art||''),
       lines:[String((k.lines||[])[0]||''),String((k.lines||[])[1]||'')],
       shot:k.shot,face:k.face}));
@@ -736,15 +818,17 @@ async function genName(){
     show();drawEd();save();
     $('#komaCard').scrollIntoView({behavior:'smooth',block:'start'});
     b.disabled=false;b.textContent='まずネームを作る';return true;
-  }catch(e){err.textContent=e.message;err.classList.remove('hide');}
+  }catch(e){err.textContent=e.message;err.classList.remove('hide');
+    err.scrollIntoView({behavior:'smooth',block:'center'});}
   b.disabled=false;b.textContent='まずネームを作る';return false;
 }
 $('#gen').onclick=genName;
 
 function clearImages(){
-  V.forEach(list=>list.forEach(v=>{if(v._url)URL.revokeObjectURL(v._url);}));
+  V.forEach(list=>list.forEach(freeVersion));
   V=[[],[],[],[]];SEL=[-1,-1,-1,-1];IMG=[null,null,null,null];
-  sheetBlob=null;$('#pv').classList.add('hide');$('#pv').innerHTML='';$('#dl').disabled=true;
+  sheetBlob=null;sheetBuilt=false;
+  $('#pv').classList.add('hide');$('#pv').innerHTML='';$('#dl').disabled=true;
 }
 
 /* ---------------- セリフをアプリで入れる（文字化け対策） ----------------
@@ -766,21 +850,35 @@ function bfont(F){const f=bfam();return (FONT_W[f]||'700')+' '+F+'px "'+f+'","No
 
 /* 吹き出しを1つ描く。b={x,y,s(文字倍率),t(しっぽ auto/down/up/left/right/none)}
    描いた範囲を返す（ドラッグ判定用） */
+const ROT_CH='ー－―〜~…‥「」（）()';
+const PUNC_CH='、。';
 function drawBubble(x,text,b,W,H){
   const F=Math.round(H*0.046*(b.s||1));
-  const per=text.length<=11?text.length:Math.ceil(text.length/2);
-  const rows=wrapJa(text,per);
   x.font=bfont(F);
-  const tw=Math.max(...rows.map(r=>x.measureText(r).width));
-  const padX=F*0.75,padY=F*0.5,lh=F*1.34;
-  const bw=tw+padX*2,bh=rows.length*lh+padY*2;
+  const vert=b.v===1;
+  let rows=null,cols=null,bw,bh,padX,padY,lh,colW;
+  if(!vert){
+    const per=text.length<=11?text.length:Math.ceil(text.length/2);
+    rows=wrapJa(text,per);
+    const tw=Math.max(...rows.map(r=>x.measureText(r).width));
+    padX=F*0.75;padY=F*0.5;lh=F*1.34;
+    bw=tw+padX*2;bh=rows.length*lh+padY*2;
+  }else{
+    // 縦書き：1列は最大8文字。列は右から左へ
+    const nCols=Math.max(1,Math.ceil(text.length/8));
+    const colLen=Math.ceil(text.length/nCols);
+    cols=[];for(let i=0;i<text.length;i+=colLen)cols.push(text.slice(i,i+colLen));
+    colW=F*1.2;lh=F*1.1;padX=F*0.55;padY=F*0.6;
+    bw=cols.length*colW+padX*2;
+    bh=Math.max(...cols.map(c=>c.length))*lh+padY*2;
+  }
   let bx=b.x*W-bw/2, by=b.y*H-bh/2;
   const m=Math.round(H*0.02);
   // 版下では左右を切って4:3にするため、切られない範囲に必ず収める
   const target=H*(820/600), cut=W>target?(W-target)/2:0;
   bx=Math.max(cut+m,Math.min(W-cut-bw-m,bx));
   by=Math.max(m,Math.min(H-bh-m,by));
-  const r=Math.min(bh/2,F*1.15);
+  const r=Math.min(Math.min(bw,bh)/2,F*1.15);
   const lw=Math.max(3,Math.round(F*0.11));
   // 本体
   x.beginPath();
@@ -795,10 +893,25 @@ function drawBubble(x,text,b,W,H){
   // しっぽ（本体の上にかぶせて描く）
   let t=b.t||'auto';
   if(t==='auto')t=(b.y<0.5)?'down':'up';
+  if(t==='free'&&typeof b.tx!=='number')t=(b.y<0.5)?'down':'up';
+  let tip=null;
   if(t!=='none'){
     const tl=F*0.9,hw=F*0.42,inset=lw*1.6;
-    let p1,p2,tip;
-    if(t==='down'){const tx=Math.max(bx+r,Math.min(bx+bw-r,bx+bw*0.65));
+    let p1,p2;
+    if(t==='free'){
+      // 自由しっぽ：先端は好きな場所。根元は先端に向いた本体のふち
+      tip=[b.tx*W,b.ty*H];
+      const cx0=bx+bw/2,cy0=by+bh/2;
+      let dx=tip[0]-cx0,dy=tip[1]-cy0;
+      const L=Math.hypot(dx,dy)||1;dx/=L;dy/=L;
+      const sx=dx!==0?(bw/2-inset)/Math.abs(dx):1e9;
+      const sy=dy!==0?(bh/2-inset)/Math.abs(dy):1e9;
+      const s=Math.min(sx,sy);
+      const Bx=cx0+dx*s,By=cy0+dy*s;
+      const hw2=Math.min(hw,s*0.5);
+      p1=[Bx-dy*hw2,By+dx*hw2];p2=[Bx+dy*hw2,By-dx*hw2];
+    }
+    else if(t==='down'){const tx=Math.max(bx+r,Math.min(bx+bw-r,bx+bw*0.65));
       p1=[tx-hw,by+bh-inset];p2=[tx+hw,by+bh-inset];tip=[tx-hw*0.3,by+bh+tl];}
     else if(t==='up'){const tx=Math.max(bx+r,Math.min(bx+bw-r,bx+bw*0.35));
       p1=[tx-hw,by+inset];p2=[tx+hw,by+inset];tip=[tx+hw*0.3,by-tl];}
@@ -815,10 +928,25 @@ function drawBubble(x,text,b,W,H){
     x.lineWidth=lw*2.4;x.strokeStyle='#fff';x.stroke();
     x.strokeStyle='#000';
   }
-  x.fillStyle='#000';x.textAlign='center';x.textBaseline='top';
-  x.font=bfont(F);
-  rows.forEach((s,n)=>x.fillText(s,bx+bw/2,by+padY+n*lh+(lh-F)/2));
-  return {bx,by,bw,bh};
+  x.fillStyle='#000';x.font=bfont(F);
+  if(!vert){
+    x.textAlign='center';x.textBaseline='top';
+    rows.forEach((s,n)=>x.fillText(s,bx+bw/2,by+padY+n*lh+(lh-F)/2));
+  }else{
+    x.textAlign='center';x.textBaseline='middle';
+    cols.forEach((col,ci)=>{
+      const cx1=bx+padX+(cols.length-1-ci)*colW+colW/2;   // 右の列から
+      [...col].forEach((ch,ri)=>{
+        const cy1=by+padY+ri*lh+lh/2;
+        if(ROT_CH.includes(ch)){
+          x.save();x.translate(cx1,cy1);x.rotate(Math.PI/2);x.fillText(ch,0,0);x.restore();
+        }else if(PUNC_CH.includes(ch)){
+          x.fillText(ch,cx1+F*0.32,cy1-F*0.32);
+        }else x.fillText(ch,cx1,cy1);
+      });
+    });
+  }
+  return {bx,by,bw,bh,tip};
 }
 function rawImage(v){
   if(v._rawim)return Promise.resolve(v._rawim);
@@ -831,7 +959,10 @@ function normBub(v){
     return {x:typeof b.x==='number'?b.x:d[j].x,
             y:typeof b.y==='number'?b.y:d[j].y,
             s:typeof b.s==='number'?b.s:1,
-            t:b.t||'auto'};});
+            t:b.t||'auto',
+            v:b.v===1?1:0,
+            tx:typeof b.tx==='number'?b.tx:null,
+            ty:typeof b.ty==='number'?b.ty:null};});
   return v.bub;
 }
 function paintBaked(x,im,i,bub,W,H){
@@ -854,16 +985,18 @@ async function bakeVersion(i,v){
   if(v._url)URL.revokeObjectURL(v._url);
   v.blob=blob;v._url=null;
   v.lines=[S.koma[i].lines[0]||'',S.koma[i].lines[1]||''];
+  invalidateSheet();
   await loadImg(i);
 }
 /* セリフだけ入れ直す（通信なし・無料） */
 async function relabel(i){
+  if(BUSY.some(Boolean))return;
   const v=cur(i);if(!v||!v.raw)return;
   const stt=$(`[data-ks="${i}"]`);
   BUSY[i]=true;refreshAll();
   try{await bakeVersion(i,v);stt.textContent='セリフを入れ直しました';}
   catch(e){stt.textContent='入れ直せませんでした';}
-  BUSY[i]=false;refreshAll();save();
+  BUSY[i]=false;refreshAll();flushSave();
 }
 
 /* ---------------- 絵を描く ---------------- */
@@ -884,8 +1017,15 @@ async function prevPic(i,noText){
   }
   return null;
 }
-async function callImage(i,noText){
-  const k=S.koma[i];
+function netErr(e){
+  if(e&&(e.name==='TimeoutError'||e.name==='AbortError'))
+    return new Error('時間切れになりました。少し待ってから、もう一度押してください');
+  if(e instanceof TypeError)
+    return new Error('インターネットにつながっていないようです。接続を確かめて、もう一度押してください');
+  return e;
+}
+async function callImage(i,noText,snap){
+  const k=snap||S.koma[i];
   const pv=$('#chain').checked?await prevPic(i,noText):null;
   const body={mode:'image',shot:k.shot||'バストアップ',
     faceKey:FACE_KEY[k.face||'基本']||'kihon',
@@ -894,97 +1034,127 @@ async function callImage(i,noText){
     lines:noText?'なし。吹き出しそのものを描かない':
       (k.lines.filter(Boolean).map(l=>'「'+l+'」').join('　')||'なし')};
   if(pv) body.prev=shrink(pv);
-  const r=await fetch(HOOK,{method:'POST',
-    headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
-  if(!r.ok)throw new Error('通信に失敗しました（'+r.status+'）');
+  let r;
+  try{r=await fetch(HOOK,{method:'POST',
+    headers:{'Content-Type':'application/json'},body:JSON.stringify(body),
+    signal:AbortSignal.timeout(180000)});}
+  catch(e){throw netErr(e);}
+  if(!r.ok)throw new Error('サーバーの調子が悪いようです。1分ほど待って、もう一度押してください（番号:'+r.status+'）');
   const bl=await r.blob();
-  if(bl.type.indexOf('image')<0)throw new Error('画像が返りませんでした');
+  try{const bm=await createImageBitmap(bl);bm.close&&bm.close();}
+  catch(e){throw new Error('画像が返りませんでした');}
   return bl;
 }
 function tick(el,label){
   const t0=Date.now();
   const f=()=>{const s=Math.floor((Date.now()-t0)/1000);
-    el.innerHTML='<span class="spin"></span>'+label+'（'+s+'秒）';};
+    const note=s>90?'いつもより時間がかかっていますが、まだ描いています':
+      label+'（ふつう1分ほど・そのまま待っていて大丈夫です）';
+    el.innerHTML='<span class="spin"></span>'+note+'（'+s+'秒）';};
   f();const id=setInterval(f,1000);
   return ()=>clearInterval(id);
 }
 async function drawOne(i,quiet,noText){
+  if(BUSY.some(Boolean))return false;
   if(noText===undefined)noText=bakeMode();
   const k=S.koma[i],stt=$(`[data-ks="${i}"]`),err=$('#drawErr');
   if(!quiet)err.classList.add('hide');
-  if(!k.art){err.textContent=`${i+1}コマ目の「絵」が空です。`;err.classList.remove('hide');return false;}
+  if(!k.art){err.textContent=`${i+1}コマ目の「絵」が空です。`;err.classList.remove('hide');
+    err.scrollIntoView({behavior:'smooth',block:'center'});return false;}
+  const snap=snapKoma(i);
   const pid=$('#chain').checked?prevId(i):null;
   BUSY[i]=true;refreshAll();
-  const stop=tick(stt,noText?'文字なしで描いています':(cur(i)?'描き直しています':'描いています'));
+  const stop=tick(stt,noText?'描いています':(cur(i)?'描き直しています':'描いています'));
   try{
     let bl;
-    try{bl=await callImage(i,noText);}
-    catch(e1){stt.innerHTML='<span class="spin"></span>もう一度試しています';bl=await callImage(i,noText);}
+    try{bl=await callImage(i,noText,snap);}
+    catch(e1){
+      // サーバーまで届いた失敗は再課金しない。つながらなかったときだけ1回リトライ
+      if(!(e1 instanceof TypeError))throw e1;
+      stt.innerHTML='<span class="spin"></span>つながりませんでした。もう一度試しています';
+      bl=await callImage(i,noText,snap);
+    }
     if(noText){
-      pushVersion(i,bl,pid,{raw:bl,bub:BUB_DEF()});
+      pushVersion(i,bl,pid,{raw:bl,bub:BUB_DEF()},snap);
       await bakeVersion(i,cur(i));
       stop();stt.textContent='できました。吹き出しはドラッグで動かせます';
     }else{
-      pushVersion(i,bl,pid);
+      pushVersion(i,bl,pid,null,snap);
       await loadImg(i);
       stop();stt.textContent='できました';
     }
-    BUSY[i]=false;refreshAll();save();return true;
+    BUSY[i]=false;refreshAll();flushSave();return true;
   }catch(e){
     stop();stt.textContent='';
     BUSY[i]=false;refreshAll();
-    err.textContent=`${i+1}コマ目：`+e.message+'。もう一度押してみてください。';
-    err.classList.remove('hide');return false;
+    err.textContent=`${i+1}コマ目：`+e.message+'。';
+    err.classList.remove('hide');
+    if(!quiet)err.scrollIntoView({behavior:'smooth',block:'center'});
+    return false;
   }
 }
 async function drawTwo(i){
+  if(BUSY.some(Boolean))return;
   const k=S.koma[i],stt=$(`[data-ks="${i}"]`),err=$('#drawErr');err.classList.add('hide');
-  if(!k.art){err.textContent=`${i+1}コマ目の「絵」が空です。`;err.classList.remove('hide');return;}
+  if(!k.art){err.textContent=`${i+1}コマ目の「絵」が空です。`;err.classList.remove('hide');
+    err.scrollIntoView({behavior:'smooth',block:'center'});return;}
   const noText=bakeMode();
+  const snap=snapKoma(i);
   const pid=$('#chain').checked?prevId(i):null;
   BUSY[i]=true;refreshAll();
   const stop=tick(stt,'2枚いっしょに描いています');
   try{
-    const rs=await Promise.allSettled([callImage(i,noText),callImage(i,noText)]);
+    const rs=await Promise.allSettled([callImage(i,noText,snap),callImage(i,noText,snap)]);
     const ok=rs.filter(r=>r.status==='fulfilled').map(r=>r.value);
-    if(!ok.length)throw new Error('2枚とも描けませんでした');
+    if(!ok.length)throw rs[0].reason||new Error('2枚とも描けませんでした');
     for(const bl of ok){
-      if(noText){pushVersion(i,bl,pid,{raw:bl,bub:BUB_DEF()});
+      if(noText){pushVersion(i,bl,pid,{raw:bl,bub:BUB_DEF()},snap);
         await bakeVersion(i,cur(i));}
-      else pushVersion(i,bl,pid);
+      else pushVersion(i,bl,pid,null,snap);
     }
     await loadImg(i);
     stop();stt.textContent=ok.length===2?'2枚できました。サムネで見くらべてください':'1枚だけできました';
-    BUSY[i]=false;refreshAll();save();
+    BUSY[i]=false;refreshAll();flushSave();
   }catch(e){
     stop();stt.textContent='';BUSY[i]=false;refreshAll();
     err.textContent=`${i+1}コマ目：`+e.message+'。';err.classList.remove('hide');
+    err.scrollIntoView({behavior:'smooth',block:'center'});
   }
 }
-async function redrawFrom(i){
+async function redrawFrom(i,repairOnly){
   let redrew=false;
   for(let j=i;j<4;j++){
-    if(j>i&&!cur(j)&&!S.koma[j].art)continue;
     const v=cur(j),k=S.koma[j];
+    if(!v){
+      // まだ描いていないコマ：修理モードでは触らない（勝手に課金しない）
+      if(repairOnly)continue;
+      if(j>i&&!k.art)continue;
+      const ok=await drawOne(j,true);if(!ok)return;redrew=true;continue;
+    }
     // セリフしか変わっていない後入れコマは、描き直さず無料で入れ直す
-    if(!redrew&&v&&v.raw&&v.art===k.art&&v.shot===k.shot&&v.face===k.face
+    if(!redrew&&v.raw&&v.art===k.art&&v.shot===k.shot&&v.face===k.face
        &&!sameLines(v.lines,k.lines)){await relabel(j);continue;}
-    if(!redrew&&j>i&&v&&!staleReason(j))continue;
+    if(!redrew&&j>i&&!staleReason(j))continue;
     const ok=await drawOne(j,true);
     if(!ok)return;
     redrew=true;
   }
 }
-$('#fixAll').onclick=e=>redrawFrom(+(e.currentTarget.dataset.from||0));
+$('#fixAll').onclick=e=>redrawFrom(+(e.currentTarget.dataset.from||0),true);
 
 function todo(){return [0,1,2,3].filter(i=>!cur(i)&&S.koma[i].art);}
 $('#drawAll').onclick=async()=>{
-  for(const i of todo()){$('#drawState').textContent=`${i+1}コマ目を描いています…`;
-    const ok=await drawOne(i,true);if(!ok)break;}
+  const list=todo();
+  for(let n=0;n<list.length;n++){
+    const i=list[n];
+    $('#drawState').textContent=`${i+1}コマ目を描いています…（${n+1}/${list.length}枚目・残りおよそ${list.length-n}分）`;
+    const ok=await drawOne(i,true);if(!ok)break;
+  }
   $('#drawState').textContent='';
 };
 
 $('#all').onclick=async()=>{
+  if(!confirm('ネーム作成のあと、絵を4枚続けて描きます。\nおよそ5分・絵4枚分の料金（数十円×4）がかかります。\nはじめてよろしいですか？'))return;
   const b=$('#all'),stt=$('#allState');
   b.disabled=true;$('#gen').disabled=true;
   const step=t=>{stt.innerHTML='<span class="spin"></span>'+t;};
@@ -999,10 +1169,10 @@ $('#all').onclick=async()=>{
         `${i+1}コマ目でつまずきました。そのコマの「このコマを描く」を押してください。</span>`;
         b.disabled=false;$('#gen').disabled=false;return;}
     }
-    step('版下に組んでいます…（6/6）');
+    step('1枚にまとめています…（6/6）');
     await buildSheet();
     downloadSheet();
-    stt.innerHTML='<span style="color:#16A34A">できました。版下を表示して、ダウンロードもしました。</span>';
+    stt.innerHTML='<span style="color:#16A34A">できました。できあがりを表示して、ダウンロードもしました。</span>';
     $('#outCard').scrollIntoView({behavior:'smooth',block:'start'});
   }catch(e){stt.innerHTML='<span style="color:#DC2626">'+e.message+'</span>';}
   b.disabled=false;$('#gen').disabled=false;refreshAll();
@@ -1041,8 +1211,11 @@ function buildSheet(){
     const c=document.createElement('canvas');
     drawSheetTo(c,k);
     c.toBlob(b=>{
-      sheetBlob=b;
-      const pv=$('#pv');pv.classList.remove('hide');pv.innerHTML='';
+      sheetBlob=b;sheetBuilt=true;
+      const pv=$('#pv');pv.classList.remove('hide');
+      const old=pv.querySelector('img');
+      if(old)try{URL.revokeObjectURL(old.src);}catch(e){}
+      pv.innerHTML='';
       const im=document.createElement('img');im.src=URL.createObjectURL(b);
       im.alt='版下のプレビュー';pv.appendChild(im);
       const cap=document.createElement('div');
@@ -1051,7 +1224,7 @@ function buildSheet(){
       pv.appendChild(cap);
       im.style.cursor='zoom-in';
       im.onclick=()=>window.open(im.src,'_blank');
-      $('#dl').disabled=false;
+      $('#dl').disabled=false;$('#dlNote').textContent='';
       res(b);
     },'image/png');
   });
@@ -1064,7 +1237,7 @@ function downloadSheet(){
 }
 $('#make').onclick=async()=>{const b=$('#make');b.disabled=true;
   b.innerHTML='<span class="spin"></span>組んでいます';
-  await buildSheet();b.textContent='版下を組んで表示する';b.disabled=false;};
+  await buildSheet();b.textContent='4コマを1枚にまとめて表示';b.disabled=false;};
 $('#dl').onclick=downloadSheet;
 
 /* ---------------- これまでの回 ---------------- */
@@ -1082,17 +1255,26 @@ $('#keep').onclick=async()=>{
   try{
     const c=document.createElement('canvas');drawSheetTo(c,1);
     const thumb=await new Promise(r=>c.toBlob(r,'image/jpeg',.8));
-    const frames=[];
-    for(let i=0;i<4;i++)frames.push(IMG[i]?await jpeg(IMG[i],1280):null);
+    const frames=[],raws=[],bubs=[];
+    for(let i=0;i<4;i++){
+      frames.push(IMG[i]?await jpeg(IMG[i],1280):null);
+      const v=cur(i);
+      raws.push(v&&v.raw?v.raw:null);
+      bubs.push(v&&v.bub?v.bub.map(b=>({x:b.x,y:b.y,s:b.s||1,t:b.t||'auto',v:b.v===1?1:0,tx:typeof b.tx==='number'?b.tx:null,ty:typeof b.ty==='number'?b.ty:null})):null);
+    }
     await dbPut('works',{id:Date.now(),ts:Date.now(),issue:S.issue,month:S.month,
-      theme:S.theme,notes:[...S.notes],koma:JSON.parse(JSON.stringify(S.koma)),thumb,frames});
+      theme:S.theme,notes:[...S.notes],koma:JSON.parse(JSON.stringify(S.koma)),
+      thumb,frames,raws,bubs});
     await renderWorks();
     b.textContent='保存しました';setTimeout(()=>{b.textContent='この回を保存する';b.disabled=false;},1400);
   }catch(e){b.textContent='保存できませんでした';b.disabled=false;}
 };
+let worksUrls=[];
 async function renderWorks(){
   const list=(await dbAll('works')).sort((a,b)=>b.ts-a.ts);
-  const box=$('#works');box.innerHTML='';
+  const box=$('#works');
+  worksUrls.forEach(u=>{try{URL.revokeObjectURL(u);}catch(e){}});worksUrls=[];
+  box.innerHTML='';
   $('#worksEmpty').classList.toggle('hide',list.length>0);
   list.forEach(w=>{
     const d=document.createElement('div');d.className='wk';
@@ -1103,34 +1285,41 @@ async function renderWorks(){
       <button class="btn ghost xs" data-dl="${w.id}">保存</button>
       <button class="btn ghost xs" data-del="${w.id}">削除</button></div>`;
     d.querySelector('.t').textContent=t;
-    if(w.thumb){const im=document.createElement('img');im.src=URL.createObjectURL(w.thumb);
+    if(w.thumb){const im=document.createElement('img');
+      const u=URL.createObjectURL(w.thumb);worksUrls.push(u);im.src=u;
       d.querySelector('.th').appendChild(im);}
     box.appendChild(d);
   });
   box.onclick=async e=>{
+    if(BUSY.some(Boolean))return;   // 描いている最中は開く・消すをさせない
     let b=e.target.closest('[data-open]');
     if(b){const w=list.find(x=>x.id==b.dataset.open);if(w)openWork(w);return;}
     b=e.target.closest('[data-dl]');
     if(b){const w=list.find(x=>x.id==b.dataset.dl);if(w&&w.thumb){
       const a=document.createElement('a');a.href=URL.createObjectURL(w.thumb);
-      a.download=(w.issue||'fumufumu').replace(/[\/\\:*?"<>|\s]/g,'_')+'_4koma.jpg';a.click();}return;}
+      a.download=(w.issue||'fumufumu').replace(/[\/\\:*?"<>|\s]/g,'_')+'_4koma.jpg';a.click();
+      setTimeout(()=>URL.revokeObjectURL(a.href),4000);}return;}
     b=e.target.closest('[data-del]');
     if(b){if(!confirm('この回を消します。よろしいですか。'))return;
       await dbDel('works',+b.dataset.del);await renderWorks();return;}
   };
 }
 async function openWork(w){
+  if(BUSY.some(Boolean))return;
   if([0,1,2,3].some(i=>cur(i))&&!confirm('いま作りかけのものは消えます。開きますか。'))return;
   clearImages();
   S={issue:w.issue||'',month:w.month||'',theme:w.theme||'',
-    notes:[...(w.notes||['','',''])],koma:JSON.parse(JSON.stringify(w.koma||[0,1,2,3].map(blank)))};
+    notes:[...(w.notes||['','',''])],koma:JSON.parse(JSON.stringify(w.koma||[0,1,2,3].map(blank))),
+    smode:S.smode,bfont:S.bfont};
   $('#issue').value=S.issue;$('#month').value=S.month;$('#theme').value=S.theme;
   $('#n1').value=S.notes[0]||'';$('#n2').value=S.notes[1]||'';$('#n3').value=S.notes[2]||'';
   (w.frames||[]).forEach((bl,i)=>{
     if(!bl)return;
     V[i]=[{id:'v'+(seq++),ts:w.ts,blob:bl,shot:S.koma[i].shot,face:S.koma[i].face,
       art:S.koma[i].art,lines:[S.koma[i].lines[0]||'',S.koma[i].lines[1]||''],
-      prevId:null}];
+      prevId:null,
+      raw:(w.raws||[])[i]||null,
+      bub:(w.bubs||[])[i]||null}];
     SEL[i]=0;
   });
   for(let i=0;i<4;i++)await loadImg(i);
@@ -1140,10 +1329,25 @@ async function openWork(w){
 }
 
 /* ---------------- そのほかの入力 ---------------- */
-$('#issue').oninput=e=>{S.issue=e.target.value;renderSheet();save();};
+$('#issue').oninput=e=>{S.issue=e.target.value;invalidateSheet();renderSheet();save();};
 $('#month').oninput=e=>{S.month=e.target.value;save();};
 $('#theme').oninput=e=>{S.theme=e.target.value;save();};
-['n1','n2','n3'].forEach((id,i)=>$('#'+id).oninput=e=>{S.notes[i]=e.target.value;renderSheet();save();});
+['n1','n2','n3'].forEach((id,i)=>$('#'+id).oninput=e=>{S.notes[i]=e.target.value;invalidateSheet();renderSheet();save();});
+$('#x2').onchange=()=>{invalidateSheet();renderSheet();};
+/* スマホ：できあがりプレビューと編集場所の行き来 */
+let jumpBack=0;
+$('#jump').onclick=()=>{
+  const sheet=$('#sheet');
+  const atSheet=Math.abs(sheet.getBoundingClientRect().top)<window.innerHeight*0.8;
+  if(atSheet&&$('#jump').textContent.indexOf('戻る')>=0){
+    window.scrollTo({top:jumpBack,behavior:'smooth'});
+    $('#jump').textContent='できあがりを見る ▼';
+  }else{
+    jumpBack=window.scrollY;
+    sheet.scrollIntoView({behavior:'smooth',block:'start'});
+    $('#jump').textContent='▲ 編集に戻る';
+  }
+};
 $('#blank').onclick=()=>{show();drawEd();};
 $('#chain').onchange=()=>{refreshAll();};
 $('#smode').onchange=e=>{S.smode=e.target.value;refreshAll();save();};
@@ -1158,7 +1362,8 @@ $('#bfont').onchange=async e=>{
 $('#reset').onclick=async()=>{
   if(!confirm('いまの内容（ネームと絵）を消して、白紙から作りはじめます。よろしいですか。\n※「これまでの回」に保存したものは消えません。'))return;
   clearImages();
-  S={issue:'',month:S.month||'',theme:'',notes:['','',''],koma:[0,1,2,3].map(blank)};
+  S={issue:'',month:S.month||'',theme:'',notes:['','',''],koma:[0,1,2,3].map(blank),
+    smode:S.smode,bfont:S.bfont};
   $('#issue').value='';$('#theme').value='';
   $('#n1').value='';$('#n2').value='';$('#n3').value='';
   $('#allState').textContent='';$('#genErr').classList.add('hide');$('#drawErr').classList.add('hide');
@@ -1176,27 +1381,36 @@ CHECKS.forEach(t=>{const l=document.createElement('label');l.className='chk';
 
 /* ---------------- 立ち上げ ---------------- */
 (async function boot(){
-  db=await openDB();
-  let d=await dbGet('state','current');
-  if(!d){try{const raw=localStorage.getItem('yonkoma');if(raw)d={S:JSON.parse(raw)};}catch(e){}}
-  if(d&&d.S){
-    S={...S,...d.S};
-    if(!Array.isArray(S.notes)||S.notes.length<3)S.notes=['','',''];
-    if(!Array.isArray(S.koma)||S.koma.length!==4)S.koma=[0,1,2,3].map(blank);
-    S.koma=S.koma.map(k=>({art:k.art||'',lines:[(k.lines||[])[0]||'',(k.lines||[])[1]||''],
-      shot:k.shot||'バストアップ',face:k.face||'基本'}));
-    $('#issue').value=S.issue||'';$('#month').value=S.month||'';$('#theme').value=S.theme||'';
-    $('#n1').value=S.notes[0]||'';$('#n2').value=S.notes[1]||'';$('#n3').value=S.notes[2]||'';
-    $('#bfont').value=S.bfont||'Zen Maru Gothic';
-    $('#smode').value=S.smode||'bake';
-    if(Array.isArray(d.V)){V=d.V.map(l=>Array.isArray(l)?l:[]);}
-    if(Array.isArray(d.SEL))SEL=d.SEL.map(x=>typeof x==='number'?x:-1);
-    if(typeof d.seq==='number')seq=d.seq;
-    for(let i=0;i<4;i++){if(SEL[i]>=V[i].length)SEL[i]=V[i].length-1;await loadImg(i);}
-    if(S.koma.some(k=>k.art||k.lines.some(Boolean))){show();drawEd();}
+  try{
+    db=await openDB();
+    if(db)db.onversionchange=()=>{try{db.close();}catch(e){}db=null;};
+    if(!db)$('#saveState').textContent='この環境では絵を保存できません（リロードで消えます）';
+    let d=await dbGet('state','current');
+    if(!d){try{const raw=localStorage.getItem('yonkoma');if(raw)d={S:JSON.parse(raw)};}catch(e){}}
+    if(d&&d.S){
+      S={...S,...d.S};
+      if(!Array.isArray(S.notes)||S.notes.length<3)S.notes=['','',''];
+      if(!Array.isArray(S.koma)||S.koma.length!==4)S.koma=[0,1,2,3].map(blank);
+      S.koma=S.koma.map(k=>({art:k.art||'',lines:[(k.lines||[])[0]||'',(k.lines||[])[1]||''],
+        shot:k.shot||'バストアップ',face:k.face||'基本'}));
+      $('#issue').value=S.issue||'';$('#month').value=S.month||'';$('#theme').value=S.theme||'';
+      $('#n1').value=S.notes[0]||'';$('#n2').value=S.notes[1]||'';$('#n3').value=S.notes[2]||'';
+      $('#bfont').value=S.bfont||'Zen Maru Gothic';
+      $('#smode').value=S.smode||'bake';
+      if(Array.isArray(d.V)){V=d.V.map(l=>Array.isArray(l)?l:[]);}
+      if(Array.isArray(d.SEL))SEL=d.SEL.map(x=>typeof x==='number'?x:-1);
+      if(typeof d.seq==='number')seq=d.seq;
+      for(let i=0;i<4;i++){if(SEL[i]>=V[i].length)SEL[i]=V[i].length-1;await loadImg(i);}
+      if(S.koma.some(k=>k.art||k.lines.some(Boolean))){show();drawEd();}
+    }
+    renderSheet();
+    await renderWorks();
+  }catch(e){
+    // 読み込みに失敗しても、新規作成はできる状態で立ち上げる
+    try{renderSheet();}catch(e2){}
+  }finally{
+    ['#gen','#all','#blank','#reset'].forEach(s=>{const el=$(s);if(el)el.disabled=false;});
   }
-  renderSheet();
-  await renderWorks();
 })();
 </script>
 </body>
